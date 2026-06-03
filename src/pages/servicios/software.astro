@@ -1,0 +1,12 @@
+---
+import HomeLayout from "../../layouts/HomeLayout.astro";
+import HomeNav from "../../components/home/HomeNav";
+---
+
+<HomeLayout title="Software a medida | Hyperfocus">
+  <HomeNav client:load />
+  <section class="min-h-screen bg-black flex flex-col items-center justify-center gap-8 px-6 pt-24 pb-16">
+    <img src="/wip.gif" alt="" class="max-w-xs w-full rounded-xl" />
+    <img src="/wip2.gif" alt="" class="max-w-xs w-full rounded-xl" />
+  </section>
+</HomeLayout>

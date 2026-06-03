@@ -1,0 +1,12 @@
+---
+import HomeLayout from "../layouts/HomeLayout.astro";
+import HomeNav from "../components/home/HomeNav";
+import ContactSection from "../components/contact/ContactSection";
+import Footer from "../components/layout/Footer";
+---
+
+<HomeLayout title="Contacto | Hyperfocus">
+  <HomeNav client:load />
+  <ContactSection client:only="react" />
+  <Footer client:load />
+</HomeLayout>

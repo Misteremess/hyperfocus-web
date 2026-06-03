@@ -1,0 +1,110 @@
+---
+import { ClientRouter } from "astro:transitions";
+import "../styles/globals.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = "Hyperfocus crea software, agentes IA y automatizaciones para empresas que quieren vender más, ahorrar tiempo y operar mejor.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <ClientRouter />
+    <style>
+      html,
+      body {
+        background: #000 !important;
+        background-image: none !important;
+        overflow-x: hidden;
+      }
+
+      /* ── Page transition overlay ────────────────────────── */
+      #pt-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+      #pt-overlay.pt-active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* Logo animation */
+      .pt-logo {
+        opacity: 0;
+        transform: scale(0.78);
+      }
+      #pt-overlay.pt-active .pt-logo {
+        animation: pt-logo-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards,
+                   pt-logo-pulse 2s ease-in-out 0.55s infinite;
+      }
+      @keyframes pt-logo-in {
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes pt-logo-pulse {
+        0%, 100% { opacity: 1;    transform: scale(1); }
+        50%       { opacity: 0.65; transform: scale(0.96); }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <!-- Transition overlay – persists across navigations -->
+    <div id="pt-overlay" transition:persist aria-hidden="true">
+      <img
+        class="pt-logo"
+        src="/logo_blanco_acento.svg"
+        alt="Hyperfocus"
+        width="48"
+        height="50"
+      />
+    </div>
+
+    <slot />
+
+    <script>
+      function resetLogo() {
+        const logo = document.querySelector<HTMLImageElement>(".pt-logo");
+        if (!logo) return;
+        // Reinicia la animación forzando un reflow
+        logo.style.animation = "none";
+        void logo.getBoundingClientRect();
+        logo.style.animation = "";
+      }
+
+      document.addEventListener("astro:before-preparation", (e) => {
+        // Skip overlay when navigating to home — IntroSplash handles the reveal there
+        const destination = (e as any).to as URL | undefined;
+        if (destination?.pathname === "/") return;
+        resetLogo();
+        document.getElementById("pt-overlay")?.classList.add("pt-active");
+      });
+
+      document.addEventListener("astro:after-swap", () => {
+        setTimeout(() => {
+          document.getElementById("pt-overlay")?.classList.remove("pt-active");
+        }, 800);
+      });
+    </script>
+  </body>
+</html>

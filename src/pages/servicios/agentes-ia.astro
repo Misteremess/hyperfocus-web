@@ -1,0 +1,12 @@
+---
+import HomeLayout from "../../layouts/HomeLayout.astro";
+import HomeNav from "../../components/home/HomeNav";
+import AgentesIAPage from "../../components/agentes-ia/AgentesIAPage";
+import Footer from "../../components/layout/Footer";
+---
+
+<HomeLayout title="Agentes de IA | Hyperfocus">
+  <HomeNav client:load />
+  <AgentesIAPage client:only="react" />
+  <Footer client:load />
+</HomeLayout>
