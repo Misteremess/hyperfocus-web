@@ -5,8 +5,9 @@ import AgentesIAPage from "../../components/agentes-ia/AgentesIAPage";
 import Footer from "../../components/layout/Footer";
 ---
 
-<HomeLayout title="Agentes de IA | Hyperfocus">
+<HomeLayout title="Agentes de IA | Hyperfocus"
+  description="Agentes de IA para WhatsApp, email, web y llamadas. Atienden, cualifican y venden con la voz de tu marca, a cualquier hora.">
   <HomeNav client:load />
-  <AgentesIAPage client:only="react" />
-  <Footer client:load />
+  <AgentesIAPage client:load />
+  <Footer client:visible />
 </HomeLayout>

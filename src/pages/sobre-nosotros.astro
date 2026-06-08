@@ -1,0 +1,13 @@
+---
+import HomeLayout from "../layouts/HomeLayout.astro";
+import HomeNav from "../components/home/HomeNav";
+import SobreNosotrosPage from "../components/sobre-nosotros/SobreNosotrosPage";
+import Footer from "../components/layout/Footer";
+---
+
+<HomeLayout title="Sobre nosotros | Hyperfocus"
+  description="Estudio técnico pequeño y especializado. Sin agencias intermediarias, sin distancia entre quien decide y quien ejecuta.">
+  <HomeNav client:load />
+  <SobreNosotrosPage client:load />
+  <Footer client:visible />
+</HomeLayout>

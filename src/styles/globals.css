@@ -53,9 +53,29 @@ a {
   to   { transform: translateX(-50%); }
 }
 .hf-marquee {
+  /* translateX(-50%) se calcula sobre el ancho propio del elemento: si no se
+     ajusta a su contenido (que va duplicado para el bucle), el porcentaje se
+     resuelve contra el ancho del contenedor visible y el desplazamiento real
+     es mucho menor que una copia completa, provocando un salto al reiniciar. */
+  width: max-content;
   animation: hf-marquee 36s linear infinite;
   will-change: transform;
 }
 .hf-marquee:hover {
   animation-play-state: paused;
+}
+
+/* ── Accesibilidad: respeta a quien prefiere menos movimiento ───────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

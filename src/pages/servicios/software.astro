@@ -1,12 +1,13 @@
 ---
 import HomeLayout from "../../layouts/HomeLayout.astro";
 import HomeNav from "../../components/home/HomeNav";
+import SoftwarePage from "../../components/software/SoftwarePage";
+import Footer from "../../components/layout/Footer";
 ---
 
-<HomeLayout title="Software a medida | Hyperfocus">
+<HomeLayout title="Software a medida | Hyperfocus"
+  description="Desarrollo de software a medida: plataformas SaaS, APIs, herramientas internas e infraestructura. Código limpio y entrega predecible.">
   <HomeNav client:load />
-  <section class="min-h-screen bg-black flex flex-col items-center justify-center gap-8 px-6 pt-24 pb-16">
-    <img src="/wip.gif" alt="" class="max-w-xs w-full rounded-xl" />
-    <img src="/wip2.gif" alt="" class="max-w-xs w-full rounded-xl" />
-  </section>
+  <SoftwarePage client:load />
+  <Footer client:visible />
 </HomeLayout>

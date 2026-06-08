@@ -1,25 +1,84 @@
 ---
 import { ClientRouter } from "astro:transitions";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
 import "../styles/globals.css";
+import CookieBanner from "../components/cookies/CookieBanner";
 
 interface Props {
   title: string;
   description?: string;
+  ogImage?: string;
 }
 
 const {
   title,
   description = "Hyperfocus crea software, agentes IA y automatizaciones para empresas que quieren vender más, ahorrar tiempo y operar mejor.",
+  ogImage = "/og-image.jpg",
 } = Astro.props;
+
+const SITE = Astro.site ?? new URL("https://hyperfocus.es");
+const canonical = new URL(Astro.url.pathname, SITE);
+const ogImageUrl = new URL(ogImage, SITE);
+const GTM_ID = "GTM-P7CTB25W";
 ---
 
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hyperfocus" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- Google Tag Manager — se carga SOLO tras consentimiento analítico -->
+    <script is:inline define:vars={{ GTM_ID }}>
+      window.dataLayer = window.dataLayer || [];
+      window.loadGTM = function () {
+        if (window.__gtmLoaded || !GTM_ID) return;
+        window.__gtmLoaded = true;
+        window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        const f = document.getElementsByTagName("script")[0];
+        const j = document.createElement("script");
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + GTM_ID;
+        f.parentNode.insertBefore(j, f);
+      };
+      try {
+        const c = JSON.parse(localStorage.getItem("hyperfocus_cookie_consent") || "null");
+        if (c && c.analytics) window.loadGTM();
+      } catch (e) {}
+      window.addEventListener("hyperfocus:consent-updated", function (e) {
+        if (e.detail && e.detail.analytics) window.loadGTM();
+      });
+    </script>
+
     <ClientRouter />
     <style>
       html,
@@ -47,55 +106,86 @@ const {
         pointer-events: auto;
       }
 
-      /* Logo animation */
-      .pt-logo {
+      /* ── Logo animation ─────────────────────────────────────── */
+      .pt-logo-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 50px;
+      }
+
+      .pt-logo-track,
+      .pt-logo-fill {
+        position: absolute;
+        inset: 0;
+        display: block;
+      }
+
+      /* faint outline — the "empty" state of the gauge */
+      .pt-logo-track {
+        opacity: 0.16;
+      }
+
+      /* white fill that rises from the bottom, like the logo filling with color */
+      .pt-logo-fill {
         opacity: 0;
-        transform: scale(0.78);
+        clip-path: inset(100% 0 0 0);
       }
-      #pt-overlay.pt-active .pt-logo {
-        animation: pt-logo-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards,
-                   pt-logo-pulse 2s ease-in-out 0.55s infinite;
+
+      #pt-overlay.pt-active .pt-logo-fill {
+        opacity: 1;
+        animation: pt-logo-fill 1.7s cubic-bezier(0.45, 0, 0.2, 1) infinite;
       }
-      @keyframes pt-logo-in {
-        to {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-      @keyframes pt-logo-pulse {
-        0%, 100% { opacity: 1;    transform: scale(1); }
-        50%       { opacity: 0.65; transform: scale(0.96); }
+
+      @keyframes pt-logo-fill {
+        0%, 100% { clip-path: inset(100% 0 0 0); }
+        55%       { clip-path: inset(0% 0 0 0); }
+        80%       { clip-path: inset(0% 0 0 0); }
       }
     </style>
   </head>
   <body class="min-h-screen">
     <!-- Transition overlay – persists across navigations -->
     <div id="pt-overlay" transition:persist aria-hidden="true">
-      <img
-        class="pt-logo"
-        src="/logo_blanco_acento.svg"
-        alt="Hyperfocus"
-        width="48"
-        height="50"
-      />
+      <div class="pt-logo-wrap">
+        <img
+          class="pt-logo-track"
+          src="/brand/logo_blanco_acento.svg"
+          alt=""
+          width="48"
+          height="50"
+          aria-hidden="true"
+        />
+        <img
+          class="pt-logo-fill"
+          src="/brand/logo_blanco_acento.svg"
+          alt="Hyperfocus"
+          width="48"
+          height="50"
+        />
+      </div>
     </div>
 
     <slot />
 
+    <CookieBanner client:idle />
+
     <script>
       function resetLogo() {
-        const logo = document.querySelector<HTMLImageElement>(".pt-logo");
-        if (!logo) return;
-        // Reinicia la animación forzando un reflow
-        logo.style.animation = "none";
-        void logo.getBoundingClientRect();
-        logo.style.animation = "";
+        const fill = document.querySelector<HTMLImageElement>(".pt-logo-fill");
+        if (!fill) return;
+        fill.style.animation = "none";
+        void fill.getBoundingClientRect();
+        fill.style.animation = "";
       }
 
+      const NO_OVERLAY_PATHS = ["/", "/aviso-legal", "/privacidad", "/cookies"];
+
       document.addEventListener("astro:before-preparation", (e) => {
-        // Skip overlay when navigating to home — IntroSplash handles the reveal there
         const destination = (e as any).to as URL | undefined;
-        if (destination?.pathname === "/") return;
+        if (destination && NO_OVERLAY_PATHS.includes(destination.pathname)) return;
         resetLogo();
         document.getElementById("pt-overlay")?.classList.add("pt-active");
       });
@@ -104,6 +194,30 @@ const {
         setTimeout(() => {
           document.getElementById("pt-overlay")?.classList.remove("pt-active");
         }, 800);
+      });
+
+      // ── Reproduce los vídeos autoplay tras cada navegación ──────────────
+      // Con las transiciones de vista, los <video autoplay> que renderizan
+      // las islas de React quedan pausados (frame negro) hasta recargar.
+      // astro:page-load se dispara en la carga inicial y tras cada navegación.
+      function playAutoplayVideos() {
+        document
+          .querySelectorAll<HTMLVideoElement>("video[autoplay]")
+          .forEach((video) => {
+            if (!video.paused) return;
+            video.muted = true; // garantiza que la política de autoplay lo permita
+            const attempt = video.play();
+            if (attempt && typeof attempt.catch === "function") {
+              attempt.catch(() => {});
+            }
+          });
+      }
+
+      document.addEventListener("astro:page-load", () => {
+        playAutoplayVideos();
+        // Las islas React pueden hidratar justo después de page-load.
+        setTimeout(playAutoplayVideos, 150);
+        setTimeout(playAutoplayVideos, 500);
       });
     </script>
   </body>

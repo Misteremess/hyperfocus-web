@@ -1,0 +1,23 @@
+---
+import HomeLayout from "../../layouts/HomeLayout.astro";
+import EnConstruccion from "../../components/layout/EnConstruccion";
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: undefined } },
+    { params: { slug: "startups" } },
+    { params: { slug: "empresas" } },
+    { params: { slug: "ecommerce" } },
+    { params: { slug: "servicios" } },
+  ];
+}
+---
+
+<HomeLayout title="Soluciones | Hyperfocus">
+  <EnConstruccion
+    client:load
+    tag="Soluciones"
+    title="Estamos preparando esta página."
+    subtitle="Estamos definiendo cómo presentar nuestras soluciones por tipo de empresa. Si quieres adelantarte, cuéntanos tu caso directamente."
+  />
+</HomeLayout>

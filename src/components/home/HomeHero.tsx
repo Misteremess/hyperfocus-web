@@ -1,59 +1,22 @@
-import { useState } from "react";
 import { motion } from "motion/react";
 import NewsCarousel from "./NewsCarousel";
 
-const COMPANIES = [
-  { name: "Vodafone", href: "/trabajo" },
-  { name: "Mapfre", href: "/trabajo" },
-  { name: "Santander", href: "/trabajo" },
-  { name: "Inditex", href: "/trabajo" },
-  { name: "Telefónica", href: "/trabajo" },
-  { name: "Repsol", href: "/trabajo" },
-];
-
-function CompaniesBlock() {
-  const [hovered, setHovered] = useState(false);
-
+function StudioBlock() {
   return (
-    <div
-      className="relative hidden flex-col items-end lg:flex"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {COMPANIES.map((company) => (
-        <a
-          key={company.name}
-          href="/trabajo"
-          className="block py-2 text-right text-2xl font-light text-white"
-          style={{
-            opacity: hovered ? 0.35 : 0.65,
-            filter: hovered ? "blur(3px)" : "blur(0px)",
-            transition: "opacity 0.3s ease, filter 0.3s ease",
-          }}
-        >
-          {company.name}
-        </a>
-      ))}
-
-      {/* Button centered over the blurred names */}
-      <div
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
-        style={{
-          opacity: hovered ? 1 : 0,
-          transition: "opacity 0.3s ease",
-        }}
+    <div className="hidden max-w-[300px] flex-col items-end gap-5 text-right lg:flex">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/30">
+        Estudio nuevo · 2026
+      </p>
+      <p className="text-[15px] leading-[1.7] text-white/55">
+        Acabamos de empezar, pero no improvisamos. Cada proyecto que aceptamos
+        recibe el mismo cuidado que esperarías de un equipo técnico interno.
+      </p>
+      <a
+        href="/sobre-nosotros"
+        className="whitespace-nowrap rounded-full border border-white/25 px-5 py-2.5 text-[13px] font-medium text-white transition-all duration-200 hover:border-white/60 hover:bg-white/10"
       >
-        <a
-          href="/trabajo"
-          className="pointer-events-auto rounded-full border border-white/25 px-5 py-2.5 text-[13px] font-medium text-white transition-all duration-200 hover:border-white/60 hover:bg-white/10"
-          style={{
-            transform: hovered ? "translateY(0) scale(1)" : "translateY(6px) scale(0.92)",
-            transition: "transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
-          }}
-        >
-          Ver todo el trabajo →
-        </a>
-      </div>
+        Conócenos →
+      </a>
     </div>
   );
 }
@@ -67,9 +30,11 @@ export default function HomeHero() {
         muted
         loop
         playsInline
+        preload="metadata"
+        poster="/images/posters/hero.webp"
         className="absolute inset-0 h-full w-full object-cover"
       >
-        <source src="/hero-video.mp4" type="video/mp4" />
+        <source src="/videos/hero-video.mp4" type="video/mp4" />
       </video>
 
       {/* Subtle left overlay so white text stays readable */}
@@ -84,7 +49,7 @@ export default function HomeHero() {
       {/* Main content row */}
       <div className="relative z-10 flex flex-1 items-center justify-between gap-12 px-6 lg:px-8 pt-[72px]">
           {/* Left: slogan + subtitle */}
-          <div className="max-w-[55%]">
+          <div className="max-w-full lg:max-w-[55%]">
             <motion.h1
               className="text-5xl font-semibold leading-[1.02] tracking-[-0.04em] text-white md:text-6xl lg:text-[5.5rem]"
               initial={{ opacity: 0, y: 32 }}
@@ -100,9 +65,9 @@ export default function HomeHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
-              Desde 2020, construimos software, agentes IA y automatizaciones
-              para líderes del sector y nuevos disruptores. Fusionamos
-              creatividad humana con tecnología para superar límites.
+              Desde 2026, construimos software, agentes IA y automatizaciones
+              para empresas que quieren mover ficha — desde quien arranca hasta
+              quien busca dar el salto. Creatividad humana y tecnología, sin atajos.
             </motion.p>
           </div>
 
@@ -112,7 +77,7 @@ export default function HomeHero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <CompaniesBlock />
+            <StudioBlock />
           </motion.div>
       </div>
 

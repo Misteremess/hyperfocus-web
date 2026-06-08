@@ -23,7 +23,10 @@ export default function IntroSplash({ onComplete }: Props) {
 
   useEffect(() => {
     const t1 = setTimeout(() => setFading(true), FADE_DELAY_MS);
-    const t2 = setTimeout(() => onCompleteRef.current(), TOTAL_MS);
+    const t2 = setTimeout(() => {
+      onCompleteRef.current();
+      window.dispatchEvent(new CustomEvent("hyperfocus:splash-done"));
+    }, TOTAL_MS);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);

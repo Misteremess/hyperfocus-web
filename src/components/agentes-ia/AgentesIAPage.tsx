@@ -5,20 +5,20 @@ import { motion, AnimatePresence } from "motion/react";
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const COMPANY_LOGOS = [
-  { name: "OpenAI",        file: "/logos/openai.svg" },
-  { name: "Anthropic",     file: "/logos/anthropic.svg" },
-  { name: "Google Gemini", file: "/logos/gemini.svg" },
-  { name: "ElevenLabs",   file: "/logos/elevenlabs.svg" },
-  { name: "Twilio",        file: "/logos/twilio.svg" },
-  { name: "Meta",          file: "/logos/meta.svg" },
+  { name: "OpenAI",        file: "/images/logos/openai.svg",     w: 300,  h: 81 },
+  { name: "Anthropic",     file: "/images/logos/anthropic.svg",  w: 1024, h: 115 },
+  { name: "Google Gemini", file: "/images/logos/gemini.svg",     w: 2500, h: 563 },
+  { name: "ElevenLabs",   file: "/images/logos/elevenlabs.svg",  w: 694,  h: 90 },
+  { name: "Twilio",        file: "/images/logos/twilio.svg",     w: 300,  h: 90 },
+  { name: "Meta",          file: "/images/logos/meta.svg",       w: 948,  h: 191 },
 ];
 
 const STATS = [
-  { value: "24/7", label: "Horas al día atendiendo a tus clientes, sin festivos ni interrupciones." },
-  { value: "<2s", label: "Tiempo de respuesta medio en cualquier canal y cualquier hora." },
-  { value: "+38%", label: "Ventas recuperadas gracias al seguimiento automático e inteligente." },
-  { value: "−62%", label: "Reducción media en costes de atención frente a un equipo humano equivalente." },
-  { value: "97%", label: "Satisfacción media de usuarios atendidos por nuestros agentes." },
+  { value: "24/7", label: "Tus clientes atendidos a cualquier hora, sin festivos ni esperas." },
+  { value: "<2s", label: "Tiempo de respuesta objetivo en cualquier canal y a cualquier hora." },
+  { value: "4", label: "Canales en un mismo agente: WhatsApp, email, web y llamadas." },
+  { value: "100%", label: "Conversaciones con la voz, el tono y los límites de tu marca." },
+  { value: "0", label: "Colas de espera. Cada mensaje recibe respuesta al instante." },
 ];
 
 const AGENT_TYPES = [
@@ -100,17 +100,19 @@ const PROJECTS = [
 
 function HeroSection() {
   return (
-    <section className="relative flex h-[50vh] flex-col overflow-hidden">
+    <section className="relative flex min-h-[70vh] flex-col overflow-hidden lg:h-[50vh] lg:min-h-0">
       {/* Video background */}
       <video
         autoPlay
         muted
         loop
         playsInline
+        preload="metadata"
+        poster="/images/posters/agentes-ia.webp"
         className="absolute inset-0 h-full w-full object-cover"
       >
-        <source src="/agentes-ia-video.mp4" type="video/mp4" />
-        <source src="/hero-video.mp4" type="video/mp4" />
+        <source src="/videos/agentes-ia-video.mp4" type="video/mp4" />
+        <source src="/videos/hero-video.mp4" type="video/mp4" />
       </video>
 
       {/* Gradient overlay */}
@@ -123,9 +125,9 @@ function HeroSection() {
       />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-1 items-end justify-between gap-10 px-6 pb-10 pt-[72px] lg:px-8">
+      <div className="relative z-10 flex flex-1 flex-col justify-end gap-8 px-6 pb-10 pt-[96px] lg:flex-row lg:items-end lg:justify-between lg:gap-10 lg:px-8 lg:pt-[72px]">
         {/* Left — headline */}
-        <div className="max-w-[52%] self-center">
+        <div className="lg:max-w-[52%] lg:self-center">
           <motion.p
             className="mb-3 text-[10px] font-semibold uppercase tracking-[0.26em] text-white/30"
             initial={{ opacity: 0, y: 10 }}
@@ -136,7 +138,7 @@ function HeroSection() {
           </motion.p>
 
           <motion.h1
-            className="text-3xl font-semibold leading-[1.04] tracking-[-0.04em] text-white md:text-4xl lg:text-[3.25rem]"
+            className="text-[1.75rem] font-semibold leading-[1.08] tracking-[-0.04em] text-white sm:text-3xl md:text-4xl lg:text-[3.25rem] lg:leading-[1.04]"
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.07, ease: [0.22, 1, 0.36, 1] }}
@@ -145,21 +147,21 @@ function HeroSection() {
           </motion.h1>
         </div>
 
-        {/* Right — tech stack, alineado a la derecha */}
+        {/* Right — tech stack */}
         <motion.div
-          className="flex-1 self-end pb-0.5 text-right"
+          className="lg:flex-1 lg:self-end lg:pb-0.5 lg:text-right"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.85, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="text-[13px] leading-[1.72] text-white/45">
+          <p className="max-w-md text-[13px] leading-[1.72] text-white/45 lg:ml-auto">
             Stack de vanguardia. ElevenLabs para voz ultrarrealista, los modelos
             más potentes de OpenAI, Anthropic y Google, integración nativa con
             tus canales de negocio.
           </p>
 
-          {/* CTA button alineado a la derecha */}
-          <div className="mt-5 flex justify-end">
+          {/* CTA button */}
+          <div className="mt-5 flex lg:justify-end">
             <a
               href="/contacto"
               className="inline-flex items-center gap-2 rounded-full border border-white/25 px-6 py-2.5 text-[14px] font-medium text-white transition-all duration-200 hover:border-white/55 hover:bg-white/10"
@@ -181,40 +183,64 @@ function HeroSection() {
 
 // ─── Section 2: Companies ─────────────────────────────────────────────────────
 
+const LOGOS_LOOP = [...COMPANY_LOGOS, ...COMPANY_LOGOS];
+
 function CompaniesSection() {
   return (
-    <section className="py-20 px-6 lg:px-8">
+    <section className="py-16 px-6 sm:py-20 lg:px-8">
       <div className="text-center">
-        {/* Frase en una sola línea */}
         <motion.p
-          className="mb-12 text-[13px] text-white/28 whitespace-nowrap"
+          className="mx-auto mb-10 max-w-2xl text-[13px] text-white/28 sm:mb-12"
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "0px 0px 120px 0px" }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
           Las empresas que redefinen la IA mundial alimentan cada agente que construimos.
         </motion.p>
 
-        {/* Logos en una sola fila — blancos y traslúcidos */}
-        <div className="flex flex-nowrap items-center justify-center gap-x-10 lg:gap-x-14">
+        {/* Logos — desktop (como estaban originalmente) */}
+        <div className="hidden sm:flex flex-wrap items-center justify-center gap-x-8 gap-y-6 sm:gap-x-10 lg:gap-x-14">
           {COMPANY_LOGOS.map((co, i) => (
             <motion.div
               key={co.name}
               className="shrink-0"
               initial={{ opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "0px 0px 120px 0px" }}
               transition={{ duration: 0.55, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
             >
               <img
                 src={co.file}
                 alt={co.name}
+                width={co.w}
+                height={co.h}
                 className="h-6 w-auto object-contain lg:h-7"
                 style={{ filter: "brightness(0) invert(1)", opacity: 0.38 }}
               />
             </motion.div>
           ))}
+        </div>
+
+        {/* Carrusel horizontal infinito — solo mobile */}
+        <div className="overflow-hidden sm:hidden">
+          <motion.div
+            className="flex items-center gap-10"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
+          >
+            {LOGOS_LOOP.map((co, i) => (
+              <img
+                key={i}
+                src={co.file}
+                alt={co.name}
+                width={co.w}
+                height={co.h}
+                className="h-5 w-auto shrink-0 object-contain"
+                style={{ filter: "brightness(0) invert(1)", opacity: 0.38 }}
+              />
+            ))}
+          </motion.div>
         </div>
       </div>
     </section>
@@ -266,11 +292,11 @@ function StatItem({ stat, index }: { stat: (typeof STATS)[0]; index: number }) {
       ref={ref}
       initial={{ opacity: 0, y: 22 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      viewport={{ once: true, margin: "0px 0px 120px 0px" }}
       transition={{ duration: 0.7, delay: index * 0.09, ease: [0.22, 1, 0.36, 1] }}
     >
       <p
-        className="text-[3rem] font-semibold leading-none tracking-[-0.04em] text-white"
+        className="text-[2.5rem] font-semibold leading-none tracking-[-0.04em] text-white sm:text-[3rem]"
         style={{ fontVariantNumeric: "tabular-nums" }}
       >
         {pre}{count}{suf}
@@ -282,8 +308,8 @@ function StatItem({ stat, index }: { stat: (typeof STATS)[0]; index: number }) {
 
 function StatsSection() {
   return (
-    <section className="border-t border-white/8 py-20 px-16 lg:px-24">
-      <div className="grid grid-cols-2 gap-10 lg:grid-cols-5">
+    <section className="border-t border-white/8 py-16 px-6 sm:py-20 sm:px-16 lg:px-24">
+      <div className="grid grid-cols-2 gap-8 sm:gap-10 lg:grid-cols-5">
         {STATS.map((stat, i) => (
           <StatItem key={stat.value} stat={stat} index={i} />
         ))}
@@ -296,7 +322,7 @@ function StatsSection() {
 
 function DemoSection() {
   return (
-    <section className="border-t border-white/8 py-24 px-6 lg:px-8">
+    <section className="border-t border-white/8 py-16 px-6 sm:py-24 lg:px-8">
       <div className="flex items-start gap-8 lg:gap-12">
         {/* Left panel */}
         <div className="w-full shrink-0 lg:w-[36%]">
@@ -304,7 +330,7 @@ function DemoSection() {
             className="mb-4 text-[11px] font-semibold uppercase tracking-[0.26em] text-white/25"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "0px 0px 120px 0px" }}
           >
             Demo
           </motion.p>
@@ -313,7 +339,7 @@ function DemoSection() {
             className="mb-10 text-[15px] leading-[1.78] text-white/42"
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "0px 0px 120px 0px" }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             Misma inteligencia, experiencia óptima en cada canal. Cada agente habla
@@ -328,7 +354,7 @@ function DemoSection() {
                 className="flex items-start gap-4 py-5 border-t border-white/8"
                 initial={{ opacity: 0, x: -14 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, margin: "0px 0px 120px 0px" }}
                 transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
               >
                 <span className="mt-0.5 shrink-0 text-white/30">{agent.icon}</span>
@@ -346,7 +372,7 @@ function DemoSection() {
           className="relative hidden aspect-video flex-1 overflow-hidden rounded-2xl border border-white/8 bg-white/4 lg:block"
           initial={{ opacity: 0, scale: 0.97 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "0px 0px 120px 0px" }}
           transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
         >
           <video
@@ -354,10 +380,12 @@ function DemoSection() {
             muted
             loop
             playsInline
+            preload="none"
+            poster="/images/posters/agentes-ia.webp"
             className="h-full w-full object-cover"
           >
-            <source src="/agentes-ia-demo.mp4" type="video/mp4" />
-            <source src="/hero-video.mp4" type="video/mp4" />
+            <source src="/videos/agentes-ia-video.mp4" type="video/mp4" />
+            <source src="/videos/hero-video.mp4" type="video/mp4" />
           </video>
 
           <div
@@ -383,13 +411,13 @@ function DemoSection() {
 
 function ComparisonSection() {
   return (
-    <section className="border-t border-white/8 py-24 px-6 lg:px-8">
-      <div className="mb-16 text-center">
+    <section className="border-t border-white/8 py-16 px-6 sm:py-24 lg:px-8">
+      <div className="mb-12 text-center sm:mb-16">
         <motion.h2
-          className="text-3xl font-semibold tracking-[-0.035em] text-white lg:text-[2.75rem] leading-[1.08]"
+          className="text-[1.75rem] font-semibold tracking-[-0.035em] text-white sm:text-3xl lg:text-[2.75rem] leading-[1.1] lg:leading-[1.08]"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "0px 0px 120px 0px" }}
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
         >
           No todos los agentes de IA son iguales.
@@ -398,20 +426,49 @@ function ComparisonSection() {
           className="mt-4 text-[14px] text-white/32"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "0px 0px 120px 0px" }}
           transition={{ duration: 0.7, delay: 0.1 }}
         >
           Esto es lo que nos diferencia de las soluciones estándar del mercado.
         </motion.p>
       </div>
 
-      <div className="mx-auto max-w-4xl">
+      {/* Mobile: tarjetas apiladas por característica */}
+      <div className="mx-auto flex max-w-md flex-col gap-3 md:hidden">
+        {COMPARISON.map((row, i) => (
+          <motion.div
+            key={row.feature}
+            className="overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02]"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px 120px 0px" }}
+            transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <p className="border-b border-white/8 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/45">
+              {row.feature}
+            </p>
+            <div className="grid grid-cols-2 divide-x divide-white/6">
+              <div className="px-4 py-3">
+                <p className="mb-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/25">Otros</p>
+                <p className="text-[13px] leading-snug text-white/35">{row.others}</p>
+              </div>
+              <div className="bg-[#4FD6FF]/[0.04] px-4 py-3">
+                <p className="mb-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-[#4FD6FF]/55">Hyperfocus</p>
+                <p className="text-[13px] font-medium leading-snug text-white/85">{row.us}</p>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Desktop: tabla de tres columnas con columna destacada */}
+      <div className="mx-auto hidden max-w-4xl md:block">
         {/* Column headers */}
         <motion.div
           className="mb-3 grid grid-cols-[1.6fr_2fr_2fr] px-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "0px 0px 120px 0px" }}
           transition={{ duration: 0.6 }}
         >
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/18">Competencia</p>
@@ -463,7 +520,7 @@ function ComparisonSection() {
               className={`grid grid-cols-[1.6fr_2fr_2fr] items-center px-4 py-5 ${i > 0 ? "border-t border-white/6" : ""}`}
               initial={{ opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "0px 0px 120px 0px" }}
               transition={{ duration: 0.5, delay: i * 0.055, ease: [0.22, 1, 0.36, 1] }}
             >
               <p className="text-[13px] font-medium text-white/45">{row.feature}</p>
@@ -481,14 +538,14 @@ function ComparisonSection() {
 
 function ProcessSection() {
   return (
-    <section className="border-t border-white/8 py-24 px-6 lg:px-8">
-      <div className="flex items-start gap-16">
-        <div className="w-[28%] shrink-0">
+    <section className="border-t border-white/8 py-16 px-6 sm:py-24 lg:px-8">
+      <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-16">
+        <div className="w-full shrink-0 lg:w-[28%]">
           <motion.h2
-            className="text-3xl font-semibold leading-[1.1] tracking-[-0.035em] text-white lg:text-4xl"
+            className="text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.035em] text-white sm:text-3xl lg:text-4xl"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "0px 0px 120px 0px" }}
             transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
           >
             Lo que hacemos.
@@ -497,7 +554,7 @@ function ProcessSection() {
             className="mt-5 text-[14px] leading-[1.75] text-white/35"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "0px 0px 120px 0px" }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
             De la auditoría al despliegue. Un proceso probado para construir
@@ -508,7 +565,7 @@ function ProcessSection() {
             className="mt-8 inline-flex items-center gap-2 rounded-full border border-white/22 px-6 py-2.5 text-[14px] font-medium text-white transition-all duration-200 hover:border-white/55 hover:bg-white/8"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "0px 0px 120px 0px" }}
             transition={{ duration: 0.7, delay: 0.18 }}
           >
             Empezar proyecto
@@ -523,7 +580,7 @@ function ProcessSection() {
               className={`flex items-start gap-8 py-8 ${i < PROCESS_ROWS.length - 1 ? "border-b border-white/8" : ""}`}
               initial={{ opacity: 0, x: 18 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "0px 0px 120px 0px" }}
               transition={{ duration: 0.65, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
               <span className="mt-0.5 w-5 shrink-0 text-[11px] font-semibold text-white/18">0{i + 1}</span>
@@ -556,7 +613,7 @@ function GalleryCard({ project, index }: { project: (typeof PROJECTS)[0]; index:
   }, [index]);
 
   return (
-    <div className="group relative aspect-square w-[33vw] shrink-0 overflow-hidden">
+    <div className="group relative aspect-square w-[72vw] shrink-0 overflow-hidden sm:w-[44vw] lg:w-[33vw]">
       {/* Gradient siempre visible — transición CSS en opacity */}
       <div
         className={`absolute inset-0 bg-gradient-to-br ${project.from} ${project.to} transition-opacity duration-[1400ms]`}
@@ -605,29 +662,29 @@ function GalleryCard({ project, index }: { project: (typeof PROJECTS)[0]; index:
 
 function GallerySection() {
   return (
-    <section className="border-t border-white/8 py-24">
+    <section className="border-t border-white/8 py-16 sm:py-24">
       {/* Header con padding */}
-      <div className="mb-12 flex items-end justify-between px-6 lg:px-8">
+      <div className="mb-10 flex items-end justify-between gap-6 px-6 sm:mb-12 lg:px-8">
         <motion.h2
-          className="text-3xl font-semibold tracking-[-0.035em] text-white lg:text-4xl"
+          className="text-2xl font-semibold tracking-[-0.035em] text-white sm:text-3xl lg:text-4xl"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "0px 0px 120px 0px" }}
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
         >
-          Proyectos reales,
+          Ejemplos de lo que
           <br />
-          resultados medibles.
+          construimos.
         </motion.h2>
         <motion.a
-          href="/trabajo"
+          href="/contacto"
           className="text-[13px] text-white/30 transition-colors hover:text-white"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "0px 0px 120px 0px" }}
           transition={{ duration: 0.7, delay: 0.1 }}
         >
-          Ver todo el trabajo →
+          Cuéntanos tu proyecto →
         </motion.a>
       </div>
 

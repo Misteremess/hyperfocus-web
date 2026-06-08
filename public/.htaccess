@@ -1,0 +1,52 @@
+# ── Hyperfocus — configuración de producción (Hostinger / Apache) ───────────
+# Sitio Astro estático: HTML real por ruta, NO necesita reescritura SPA.
+
+# Forzar HTTPS
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Página de error 404 personalizada (Astro genera /404.html)
+ErrorDocument 404 /404.html
+
+# ── Compresión ──────────────────────────────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml application/xml
+</IfModule>
+
+# ── Caché ───────────────────────────────────────────────────────────────────
+<IfModule mod_headers.c>
+  # Assets con hash en el nombre (/_astro/*) → inmutables 1 año
+  <FilesMatch "\.(js|css|woff2|woff|ttf)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  # Imágenes y vídeos → 30 días
+  <FilesMatch "\.(webp|avif|jpg|jpeg|png|svg|gif|mp4|webm|ico)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  # HTML → siempre revalidar (para que se vean los cambios al re-desplegar)
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_mime.c>
+  AddType image/webp .webp
+  AddType image/avif .avif
+  AddType video/mp4 .mp4
+  AddType video/webm .webm
+</IfModule>
+
+# ── Seguridad básica ────────────────────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# No listar directorios
+Options -Indexes
