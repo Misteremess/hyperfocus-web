@@ -46,7 +46,22 @@ ErrorDocument 404 /404.html
   Header set X-Content-Type-Options "nosniff"
   Header set X-Frame-Options "SAMEORIGIN"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
 </IfModule>
 
 # No listar directorios
 Options -Indexes
+
+# Bloquear acceso a ficheros de configuración/credenciales si acaban dentro
+# del docroot por error (defensa en profundidad; el real vive fuera de public_html)
+<FilesMatch "^smtp_config\.php$|\.(env|ini|log|bak|config)$">
+  Require all denied
+</FilesMatch>
+
+# ── Límites anti-abuso ──────────────────────────────────────────────────────
+# Tamaño máximo de petición (evita subidas/POST masivos al endpoint de contacto)
+LimitRequestBody 262144
+
+<IfModule mod_reqtimeout.c>
+  RequestReadTimeout header=10-20,MinRate=500 body=10,MinRate=500
+</IfModule>

@@ -1,13 +1,5 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import emailjs from "@emailjs/browser";
-
-// ── EmailJS config ─────────────────────────────────────────────────────────
-// Set these values in your EmailJS dashboard (https://www.emailjs.com/)
-const EMAILJS_SERVICE_ID = import.meta.env.PUBLIC_EMAILJS_SERVICE_ID ?? "";
-const EMAILJS_TEMPLATE_COMPANY = import.meta.env.PUBLIC_EMAILJS_TEMPLATE_COMPANY ?? "";
-const EMAILJS_TEMPLATE_USER = import.meta.env.PUBLIC_EMAILJS_TEMPLATE_USER ?? "";
-const EMAILJS_PUBLIC_KEY = import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY ?? "";
 
 const inputClass =
   "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[14px] text-white placeholder:text-white/25 outline-none transition focus:border-white/30";
@@ -127,6 +119,7 @@ type FormState = {
   nombre: string;
   empresa: string;
   email: string;
+  telefono: string;
   comoNosConocio: string;
   ayuda: string;
   compromiso: string;
@@ -135,7 +128,7 @@ type FormState = {
 };
 
 const EMPTY: FormState = {
-  nombre: "", empresa: "", email: "", comoNosConocio: "",
+  nombre: "", empresa: "", email: "", telefono: "", comoNosConocio: "",
   ayuda: "", compromiso: "", hito: "", inversion: "",
 };
 
@@ -177,41 +170,35 @@ export default function ContactSection() {
 
     setSending(true);
 
-    const templateParams = {
-      from_name: form.nombre,
-      company: form.empresa,
-      from_email: form.email,
-      how_found: form.comoNosConocio,
-      message: form.ayuda,
-      commitment: form.compromiso,
-      milestone: form.hito,
-      investment: form.inversion,
-      to_email: "info@hyperfocus.es",
-      reply_to: form.email,
-    };
-
     try {
-      // Send to company
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_COMPANY,
-        templateParams,
-        EMAILJS_PUBLIC_KEY,
-      );
+      const res = await fetch("/api/contact.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: form.nombre,
+          empresa: form.empresa,
+          email: form.email,
+          telefono: form.telefono,
+          comoNosConocio: form.comoNosConocio,
+          ayuda: form.ayuda,
+          compromiso: form.compromiso,
+          hito: form.hito,
+          inversion: form.inversion,
+          company_url: botField,
+        }),
+      });
 
-      // Send confirmation copy to user
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_USER,
-        { ...templateParams, to_email: form.email },
-        EMAILJS_PUBLIC_KEY,
-      );
+      const json = await res.json().catch(() => ({}));
+
+      if (!res.ok || !json.success) {
+        throw new Error(json.error ?? "Error desconocido");
+      }
 
       try { localStorage.setItem(RATE_LIMIT_KEY, String(Date.now())); } catch {}
       setSent(true);
-    } catch (err) {
-      console.error("EmailJS error:", err);
-      setError("No se pudo enviar el mensaje. Por favor, escríbenos directamente a info@hyperfocus.es");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error desconocido";
+      setError(msg || "No se pudo enviar el mensaje. Por favor, escríbenos directamente a info@hyperfocus.es");
     } finally {
       setSending(false);
     }
@@ -297,10 +284,17 @@ export default function ContactSection() {
             </Field>
           </div>
 
-          <Field label="Email">
-            <input type="email" placeholder="tu@empresa.com" required maxLength={120}
-              value={form.email} onChange={set("email")} className={inputClass} />
-          </Field>
+          {/* Email + Teléfono side by side */}
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Field label="Email">
+              <input type="email" placeholder="tu@empresa.com" required maxLength={120}
+                value={form.email} onChange={set("email")} className={inputClass} />
+            </Field>
+            <Field label="Teléfono (opcional)">
+              <input type="tel" placeholder="+34 600 000 000" maxLength={30}
+                value={form.telefono} onChange={set("telefono")} className={inputClass} />
+            </Field>
+          </div>
 
           <Field label="¿Cómo nos has conocido?">
             <SelectWrapper>

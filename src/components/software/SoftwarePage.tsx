@@ -79,7 +79,30 @@ const PROCESS_ROWS = [
   },
 ];
 
-const PROJECTS = [
+type Project = {
+  name: string;
+  tag: string;
+  from: string;
+  to: string;
+  accent: string;
+  images?: string[];
+};
+
+const PROJECTS: Project[] = [
+  {
+    name: "ChillPocket — App de finanzas personales",
+    tag: "Producto propio · React Native",
+    from: "from-indigo-600/40",
+    to: "to-slate-950/70",
+    accent: "rgba(99,102,241,0.18)",
+    images: [
+      "/images/chillpocket/home.webp",
+      "/images/chillpocket/movimientos.webp",
+      "/images/chillpocket/analitica.webp",
+      "/images/chillpocket/habitos.webp",
+      "/images/chillpocket/inversion.webp",
+    ],
+  },
   { name: "SaaS B2B — Panel de administración y billing", tag: "Next.js + Node.js", from: "from-indigo-700/35", to: "to-slate-950/60", accent: "rgba(99,102,241,0.12)" },
   { name: "Fintech — API de pagos y conciliación bancaria", tag: "Python + PostgreSQL", from: "from-emerald-600/30", to: "to-slate-950/60", accent: "rgba(16,185,129,0.12)" },
   { name: "Salud — Portal de gestión de pacientes", tag: "React + MongoDB", from: "from-sky-600/30", to: "to-indigo-950/60", accent: "rgba(14,165,233,0.12)" },
@@ -413,22 +436,68 @@ function ProcessSection() {
 const FRAME_OPACITIES = [1, 0.72, 0.5];
 const CARD_FRAMES = FRAME_OPACITIES.length;
 
-function GalleryCard({ project, index }: { project: (typeof PROJECTS)[0]; index: number }) {
-  const [frame, setFrame] = useState(index % CARD_FRAMES);
+function GalleryCard({ project, index }: { project: Project; index: number }) {
+  const frameCount = project.images ? project.images.length : CARD_FRAMES;
+  const [frame, setFrame] = useState(index % frameCount);
 
   useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval>;
     const id = setTimeout(() => {
-      const intervalId = setInterval(() => setFrame((f) => (f + 1) % CARD_FRAMES), 3200);
-      return () => clearInterval(intervalId);
+      intervalId = setInterval(
+        () => setFrame((f) => (f + 1) % frameCount),
+        project.images ? 2600 : 3200
+      );
     }, index * 700);
-    return () => clearTimeout(id);
-  }, [index]);
+    return () => {
+      clearTimeout(id);
+      clearInterval(intervalId);
+    };
+  }, [index, frameCount, project.images]);
+
+  if (project.images) {
+    return (
+      <div className="group relative aspect-square w-[72vw] shrink-0 overflow-hidden sm:w-[44vw] lg:w-[33vw]">
+        <div className={`absolute inset-0 bg-gradient-to-br ${project.from} ${project.to}`} />
+
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: `radial-gradient(ellipse at 50% 22%, ${project.accent}, transparent 62%)` }}
+        />
+
+        {/* Pantalla del móvil — emerge desde el borde inferior */}
+        <div className="absolute left-1/2 top-8 w-[52%] -translate-x-1/2">
+          <div className="relative aspect-[721/1550] overflow-hidden rounded-[1.4rem] border border-white/12 bg-black shadow-[0_24px_60px_-18px_rgba(0,0,0,0.85)] ring-1 ring-white/5">
+            {project.images.map((src, j) => (
+              <img
+                key={src}
+                src={src}
+                alt=""
+                loading="lazy"
+                draggable={false}
+                className="absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-700"
+                style={{ opacity: frame === j ? 1 : 0 }}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/85 via-black/15 to-transparent p-5">
+          <span className="mb-2 self-start rounded-full border border-white/14 bg-black/35 px-2.5 py-0.5 text-[10px] font-medium text-white/55 backdrop-blur-sm">
+            {project.tag}
+          </span>
+          <p className="text-[14px] font-semibold leading-[1.3] text-white">{project.name}</p>
+        </div>
+
+        <div className="absolute inset-0 bg-white/0 transition-all duration-300 group-hover:bg-white/5" />
+      </div>
+    );
+  }
 
   return (
     <div className="group relative aspect-square w-[72vw] shrink-0 overflow-hidden sm:w-[44vw] lg:w-[33vw]">
       <div
         className={`absolute inset-0 bg-gradient-to-br ${project.from} ${project.to} transition-opacity duration-[1400ms]`}
-        style={{ opacity: FRAME_OPACITIES[frame] }}
+        style={{ opacity: FRAME_OPACITIES[frame % CARD_FRAMES] }}
       />
 
       <div className="absolute inset-6 flex flex-col gap-3 opacity-20">
