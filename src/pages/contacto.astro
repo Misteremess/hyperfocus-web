@@ -2,12 +2,14 @@
 import HomeLayout from "../layouts/HomeLayout.astro";
 import HomeNav from "../components/home/HomeNav";
 import ContactSection from "../components/contact/ContactSection";
-import Footer from "../components/layout/Footer";
+import Footer from "../components/layout/Footer.astro";
 ---
 
-<HomeLayout title="Contacto | Hyperfocus"
-  description="Cuéntanos tu proyecto. Revisamos cada mensaje personalmente y respondemos en menos de 48 horas. Primera llamada sin compromiso.">
+<HomeLayout
+  title="Contacto | Hyperfocus"
+  description="Contacta con Hyperfocus (Toledo): formulario, email, teléfono o WhatsApp. Te contesta quien hará el proyecto. Primera llamada sin compromiso."
+>
   <HomeNav client:load />
   <ContactSection client:load />
-  <Footer client:visible />
+  <Footer />
 </HomeLayout>

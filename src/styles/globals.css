@@ -1,13 +1,22 @@
 @import "tailwindcss";
 
-:root {
-  --background: #050607;
-  --surface: #0b0f14;
-  --card: #10161d;
-  --text-primary: #f5f7fa;
-  --text-secondary: #8a94a6;
-  --accent: #4fd6ff;
-  --border: rgba(255, 255, 255, 0.08);
+/* ── Colores del tema ─────────────────────────────────────────────────────
+   ink = texto y elementos oscuros · paper = fondo · surface = fondos alternos.
+   Las utilidades (text-ink/65, bg-paper, border-ink/10…) usan estas variables,
+   así que basta redefinirlas en un contenedor para invertir el tema (.theme-dark). */
+@theme {
+  --color-ink: #0b1b33;
+  --color-paper: #ffffff;
+  --color-surface: #f4f6f9;
+  --color-brand: #0369a1;
+}
+
+.theme-dark {
+  --color-ink: #ffffff;
+  --color-paper: #0b1b33;
+  --color-surface: #13284a;
+  --color-brand: #7dd3fc;
+  color-scheme: dark;
 }
 
 * {
@@ -16,17 +25,32 @@
 
 html {
   scroll-behavior: smooth;
-  background: var(--background);
+  background: var(--color-paper);
+  color-scheme: light;
+}
+
+/* Estilos base dentro de @layer base: así las utilidades de Tailwind
+   (text-paper, outline-none…) pueden sobrescribirlos. Fuera de una capa
+   ganarían siempre a las utilidades. */
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Foco visible para quien navega con teclado */
+  :where(a, button, [role="switch"], summary):focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top right, rgba(79, 214, 255, 0.12), transparent 32rem),
-    radial-gradient(circle at top left, rgba(79, 214, 255, 0.06), transparent 28rem),
-    var(--background);
-  color: var(--text-primary);
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-family:
     Inter,
     ui-sans-serif,
@@ -35,22 +59,22 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: rgba(79, 214, 255, 0.3);
-  color: #ffffff;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
+  background: rgba(3, 105, 161, 0.18);
+  color: var(--color-ink);
 }
 
 /* ── Gallery marquee ────────────────────────────────────── */
 @keyframes hf-marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 .hf-marquee {
   /* translateX(-50%) se calcula sobre el ancho propio del elemento: si no se
@@ -63,6 +87,215 @@ a {
 }
 .hf-marquee:hover {
   animation-play-state: paused;
+}
+
+/* ── Texto largo en Markdown (legales y blog) ─────────────────────────────── */
+.hf-prose {
+  color: color-mix(in oklab, var(--color-ink) calc(0.72 * 100%), transparent);
+  font-size: 15px;
+  line-height: 1.85;
+}
+.hf-prose > * + * {
+  margin-top: 1.1em;
+}
+.hf-prose h2 {
+  margin-top: 2.6em;
+  color: var(--color-ink);
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.hf-prose h3 {
+  margin-top: 1.8em;
+  color: color-mix(in oklab, var(--color-ink) calc(0.92 * 100%), transparent);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.hf-prose a {
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.hf-prose strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.hf-prose ul,
+.hf-prose ol {
+  padding-left: 1.3em;
+}
+.hf-prose ul {
+  list-style: disc;
+}
+.hf-prose ol {
+  list-style: decimal;
+}
+.hf-prose li + li {
+  margin-top: 0.4em;
+}
+.hf-prose li::marker {
+  color: color-mix(in oklab, var(--color-ink) calc(0.45 * 100%), transparent);
+}
+.hf-prose blockquote {
+  border-left: 2px solid var(--color-brand);
+  padding-left: 1.1em;
+  color: color-mix(in oklab, var(--color-ink) calc(0.85 * 100%), transparent);
+  font-style: italic;
+}
+.hf-prose code {
+  border-radius: 5px;
+  background: color-mix(in oklab, var(--color-ink) calc(0.08 * 100%), transparent);
+  padding: 0.1em 0.4em;
+  font-size: 0.88em;
+  color: var(--color-ink);
+  word-break: break-all;
+}
+.hf-prose hr {
+  border-color: color-mix(in oklab, var(--color-ink) calc(0.1 * 100%), transparent);
+  margin: 2.5em 0;
+}
+.hf-table-wrap {
+  overflow-x: auto;
+  border: 1px solid color-mix(in oklab, var(--color-ink) calc(0.1 * 100%), transparent);
+  border-radius: 12px;
+}
+.hf-prose table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.hf-prose th {
+  background: color-mix(in oklab, var(--color-ink) calc(0.04 * 100%), transparent);
+  padding: 0.8em 1em;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-ink) calc(0.6 * 100%), transparent);
+}
+.hf-prose td {
+  border-top: 1px solid color-mix(in oklab, var(--color-ink) calc(0.07 * 100%), transparent);
+  padding: 0.8em 1em;
+  vertical-align: top;
+}
+/* Móvil: una tarjeta por fila con el nombre de la columna delante */
+@media (max-width: 640px) {
+  .hf-table-wrap {
+    border: 0;
+    overflow: visible;
+  }
+  .hf-prose table {
+    min-width: 0;
+  }
+  .hf-prose thead {
+    display: none;
+  }
+  .hf-prose table,
+  .hf-prose tbody,
+  .hf-prose tr,
+  .hf-prose td {
+    display: block;
+    width: 100%;
+  }
+  .hf-prose tr {
+    margin-bottom: 0.75rem;
+    border: 1px solid color-mix(in oklab, var(--color-ink) calc(0.1 * 100%), transparent);
+    border-radius: 12px;
+    background: color-mix(in oklab, var(--color-ink) calc(0.03 * 100%), transparent);
+    padding: 0.5rem 0;
+  }
+  .hf-prose td {
+    display: flex;
+    gap: 0.75rem;
+    border: 0;
+    padding: 0.3rem 1rem;
+  }
+  .hf-prose td::before {
+    content: attr(data-label);
+    flex: 0 0 6.5rem;
+    padding-top: 0.15em;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--color-ink) calc(0.5 * 100%), transparent);
+  }
+}
+/* Legales: secciones numeradas «01 — Título» */
+.hf-prose-numbered {
+  counter-reset: hf-sec;
+}
+.hf-prose-numbered h2 {
+  counter-increment: hf-sec;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-ink) calc(0.6 * 100%), transparent);
+}
+.hf-prose-numbered h2::before {
+  content: counter(hf-sec, decimal-leading-zero) " — ";
+}
+.hf-prose-numbered > h2:first-child {
+  margin-top: 0;
+}
+
+/* ── Entrada de las cabeceras al cargar la página ────────────────────────── */
+@keyframes hf-hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.hf-hero-in {
+  animation: hf-hero-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) var(--hf-delay, 0ms) both;
+}
+
+/* ── Aparición al hacer scroll en páginas .astro (sin React) ─────────────── */
+/* Solo se oculta si hay JS (clase hf-js en <html>), así nunca queda invisible. */
+.hf-js .hf-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--hf-delay, 0ms),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--hf-delay, 0ms);
+}
+.hf-js .hf-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Fondo de color que gira despacio (bloques de llamada a la acción) ──── */
+@keyframes hf-aurora {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.hf-aurora {
+  animation: hf-aurora 18s linear infinite;
+  filter: blur(40px);
+}
+
+/* ── Texto con degradado animado ─────────────────────────────────────────── */
+@keyframes hf-shine {
+  to {
+    background-position: 200% center;
+  }
+}
+.hf-gradient-text {
+  background-image: linear-gradient(90deg, #0b1b33 0%, #0369a1 25%, #6d28d9 50%, #047857 75%, #0b1b33 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: hf-shine 8s linear infinite;
 }
 
 /* ── Accesibilidad: respeta a quien prefiere menos movimiento ───────────── */

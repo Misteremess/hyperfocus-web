@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 
+export const INTRO_SEEN_KEY = "hf_intro_seen";
+
 const WORDS = ["Nunca", "es", "suficiente."];
 
 const STAGGER = 0.13;
@@ -35,14 +37,18 @@ export default function IntroSplash({ onComplete }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
+      className="hf-intro fixed inset-0 z-[100] flex items-center justify-center bg-paper"
       style={{
         opacity: fading ? 0 : 1,
         transition: `opacity ${FADE_DUR}s ease-in-out`,
         pointerEvents: fading ? "none" : "auto",
       }}
     >
-      <h1 className="flex flex-wrap justify-center gap-x-[0.4em] px-6 text-center text-xl font-light leading-none tracking-[0.01em] text-white sm:text-2xl md:text-3xl">
+      {/* Texto decorativo: el h1 de la portada está en el hero. */}
+      <p
+        aria-hidden="true"
+        className="flex flex-wrap justify-center gap-x-[0.4em] px-6 text-center text-xl font-light leading-none tracking-[0.01em] text-ink sm:text-2xl md:text-3xl"
+      >
         {WORDS.map((word, i) => (
           <motion.span
             key={i}
@@ -58,7 +64,7 @@ export default function IntroSplash({ onComplete }: Props) {
             {word}
           </motion.span>
         ))}
-      </h1>
+      </p>
     </div>
   );
 }

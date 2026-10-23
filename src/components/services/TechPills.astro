@@ -1,0 +1,35 @@
+---
+interface Props {
+  intro: string;
+  items: string[];
+}
+const { intro, items } = Astro.props;
+---
+
+<section class="px-6 py-16 sm:py-20 lg:px-8">
+  <p class="hf-reveal mb-8 text-center text-[14px] text-ink/65 sm:mb-10">{intro}</p>
+
+  <!-- Escritorio y tablet: etiquetas -->
+  <ul class="hidden flex-wrap items-center justify-center gap-2.5 sm:flex sm:gap-3">
+    {items.map((tech, i) => (
+      <li
+        class="hf-reveal rounded-full border border-ink/12 px-4 py-1.5 text-[12px] font-medium text-ink/70 transition-colors duration-200 hover:border-ink/30 hover:text-ink"
+        style={`--hf-delay: ${i * 30}ms`}
+      >
+        {tech}
+      </li>
+    ))}
+  </ul>
+
+  <!-- Móvil: cinta en movimiento -->
+  <div class="overflow-hidden sm:hidden" aria-hidden="true">
+    <div class="hf-marquee flex items-center gap-2.5" style="animation-duration: 26s">
+      {[...items, ...items].map((tech) => (
+        <span class="shrink-0 rounded-full border border-ink/12 px-4 py-1.5 text-[12px] font-medium text-ink/70">
+          {tech}
+        </span>
+      ))}
+    </div>
+  </div>
+  <p class="sr-only sm:hidden">{items.join(", ")}</p>
+</section>

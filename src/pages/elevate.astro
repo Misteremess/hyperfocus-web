@@ -1,0 +1,15 @@
+---
+import HomeLayout from "../layouts/HomeLayout.astro";
+import HomeNav from "../components/home/HomeNav";
+import ElevatePage from "../components/elevate/ElevatePage";
+import Footer from "../components/layout/Footer.astro";
+---
+
+<HomeLayout
+  title="Elevate · Alertas de licitaciones públicas con IA | Hyperfocus"
+  description="Elevate, de Hyperfocus: alertas de licitaciones públicas de la PLACSP filtradas y puntuadas con IA según tu negocio. Plan gratuito sin tarjeta."
+>
+  <HomeNav client:load />
+  <ElevatePage client:load />
+  <Footer />
+</HomeLayout>

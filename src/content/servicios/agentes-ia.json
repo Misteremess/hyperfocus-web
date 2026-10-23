@@ -1,0 +1,98 @@
+{
+  "order": 2,
+  "seo": {
+    "title": "Agentes de IA | Hyperfocus",
+    "description": "Agentes de IA para WhatsApp, email, web y teléfono: responden lo habitual con el tono de tu marca y te pasan lo que necesita una persona."
+  },
+  "card": {
+    "title": "Agentes de IA",
+    "desc": "Agentes que responden por WhatsApp, email, web o teléfono con el tono de tu marca y te pasan lo que necesita una persona."
+  },
+  "hero": {
+    "eyebrow": "Servicios — Agentes de IA",
+    "title": "Agentes de IA que atienden, venden y fidelizan.",
+    "intro": "Trabajamos con modelos de OpenAI, Anthropic y Google, voz de ElevenLabs e integración con los canales que ya usa tu negocio."
+  },
+  "features": {
+    "eyebrow": "Un agente para cada canal",
+    "title": "Donde ya te escriben tus clientes.",
+    "intro": "El mismo agente puede atender en varios canales, adaptando la forma de responder a cada uno.",
+    "items": [
+      {
+        "icon": "chat",
+        "label": "Agente de IA para WhatsApp",
+        "desc": "Responde las preguntas habituales, recoge los datos de quien escribe y te pasa los clientes interesados, con el tono de tu marca."
+      },
+      {
+        "icon": "mail",
+        "label": "Agente de IA para correo",
+        "desc": "Clasifica los correos que llegan, prepara respuestas a lo habitual y te deja a ti solo los que necesitan una persona."
+      },
+      {
+        "icon": "globe",
+        "label": "Agente de IA para web — texto y voz",
+        "desc": "Un asistente en tu web que contesta por escrito o por voz sobre tus productos, horarios o pedidos."
+      },
+      {
+        "icon": "phone",
+        "label": "Agente de IA para llamadas",
+        "desc": "Atiende llamadas entrantes o hace llamadas salientes (recordatorios, confirmaciones) con una voz natural de ElevenLabs."
+      }
+    ],
+    "demo": {
+      "image": "/images/conceptos/saas-soporte-tecnico-24-7.webp",
+      "alt": "Diseño de concepto de un panel de soporte con agente de IA",
+      "badge": "Concepto de panel de atención con IA"
+    }
+  },
+  "process": {
+    "title": "Lo que hacemos.",
+    "intro": "Del análisis a la puesta en marcha, con revisiones con casos reales antes de abrirlo a tus clientes.",
+    "steps": [
+      {
+        "title": "Análisis",
+        "desc": "Vemos por dónde te escriben los clientes, qué preguntan y qué debería resolver el agente y qué no."
+      },
+      {
+        "title": "Diseño de la conversación",
+        "desc": "Definimos cómo habla el agente, qué puede hacer y en qué momento pasa la conversación a una persona de tu equipo."
+      },
+      {
+        "title": "Puesta en marcha",
+        "desc": "Lo conectamos a tus canales, te damos un panel para revisar las conversaciones y lo ajustamos con los primeros casos reales."
+      }
+    ]
+  },
+  "concepts": [
+    {
+      "name": "Atención al cliente en varios canales",
+      "sector": "Retail",
+      "image": "/images/conceptos/retail-atencion-al-cliente-omnicanal.webp"
+    },
+    {
+      "name": "Soporte técnico con agente de IA",
+      "sector": "SaaS",
+      "image": "/images/conceptos/saas-soporte-tecnico-24-7.webp"
+    },
+    {
+      "name": "Recuperación de carritos abandonados",
+      "sector": "E-commerce",
+      "image": "/images/conceptos/e-commerce-recuperacion-de-carrito.webp"
+    },
+    {
+      "name": "Cualificación de clientes potenciales",
+      "sector": "Fintech",
+      "image": "/images/conceptos/fintech-cualificacion-de-leads.webp"
+    },
+    {
+      "name": "Consultas legales iniciales",
+      "sector": "Legal",
+      "image": "/images/conceptos/legal-consultas-iniciales.webp"
+    },
+    {
+      "name": "Citas y seguimiento de pacientes",
+      "sector": "Salud",
+      "image": "/images/conceptos/salud-citas-y-seguimiento.webp"
+    }
+  ]
+}

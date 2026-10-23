@@ -1,0 +1,65 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro: string;
+}
+const { eyebrow, title, intro } = Astro.props;
+// «Servicios — Software a medida» → miga de pan
+const current = eyebrow.split("—").pop()?.trim() ?? eyebrow;
+---
+
+<section class="relative overflow-hidden border-b border-ink/10 bg-surface">
+  <div
+    class="pointer-events-none absolute inset-0 opacity-60"
+    style="background-image: linear-gradient(rgba(11,27,51,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(11,27,51,0.05) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(ellipse at 80% 0%, black 20%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at 80% 0%, black 20%, transparent 70%);"
+    aria-hidden="true"
+  ></div>
+  <div
+    class="pointer-events-none absolute -right-32 -top-32 h-[480px] w-[480px] rounded-full blur-3xl"
+    style="background: radial-gradient(circle, rgba(3,105,161,0.14), transparent 65%);"
+    aria-hidden="true"
+  ></div>
+
+  <div class="relative z-10 mx-auto max-w-7xl px-6 pb-16 pt-32 sm:pb-20 sm:pt-36 lg:px-8">
+    <nav aria-label="Ruta" class="hf-hero-in mb-6 text-[13px] text-ink/60">
+      <a href="/servicios" class="hover:text-ink">
+        Servicios
+      </a>
+      <span class="mx-2" aria-hidden="true">
+        /
+      </span>
+      <span class="text-ink/80" aria-current="page">
+        {current}
+      </span>
+    </nav>
+    <div class="grid gap-8 lg:grid-cols-12 lg:items-end">
+      <h1
+        class="hf-hero-in text-[2.2rem] font-semibold leading-[1.06] tracking-[-0.035em] text-ink sm:text-5xl lg:col-span-7 lg:text-[3.6rem]"
+        style="--hf-delay: 60ms"
+      >
+        {title}
+      </h1>
+      <div class="hf-hero-in lg:col-span-5" style="--hf-delay: 150ms">
+        <p class="text-[17px] leading-[1.7] text-ink/70">{intro}</p>
+        <div class="mt-7 flex flex-col gap-3 sm:flex-row">
+          <a
+            href="/contacto"
+            class="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3 text-[15px] font-semibold text-paper transition hover:bg-ink/90"
+          >
+            Hablar con nosotros{" "}
+            <span class="text-[12px]" aria-hidden="true">
+              →
+            </span>
+          </a>
+          <a
+            href="#como-trabajamos"
+            class="inline-flex items-center justify-center rounded-full border border-ink/15 bg-paper px-6 py-3 text-[15px] font-medium text-ink transition hover:border-ink/40"
+          >
+            Cómo trabajamos
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

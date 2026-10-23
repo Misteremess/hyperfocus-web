@@ -1,0 +1,102 @@
+---
+// Textos legales: /aviso-legal, /privacidad y /cookies, desde src/content/legal/*.md
+import { getCollection } from "astro:content";
+import HomeLayout from "../layouts/HomeLayout.astro";
+import HomeNav from "../components/home/HomeNav";
+import Footer from "../components/layout/Footer.astro";
+import { LEGAL, LEGAL_LINKS, SITE } from "../data/site";
+
+export async function getStaticPaths() {
+  const docs = await getCollection("legal");
+  return docs.map((doc) => ({ params: { legal: doc.id }, props: { doc } }));
+}
+
+const { doc } = Astro.props;
+const currentPath = `/${doc.id}`;
+
+// Sustituye los datos del titular para no repetirlos en cada texto.
+const html = (doc.rendered?.html ?? "")
+  .replaceAll("{{owner}}", LEGAL.owner)
+  .replaceAll("{{taxId}}", LEGAL.taxId)
+  .replaceAll("{{address}}", LEGAL.address)
+  // Tablas: cada celda lleva el nombre de su columna (data-label) para que en
+  // móvil se muestren como tarjetas, una por fila, sin cortarse.
+  .replace(/<table>([\s\S]*?)<\/table>/g, (_, inner: string) => {
+    const heads = [...inner.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => m[1].replace(/<[^>]+>/g, ""));
+    const body = inner.replace(/<tr>([\s\S]*?)<\/tr>/g, (row: string, cells: string) => {
+      let i = 0;
+      return row.includes("<td")
+        ? `<tr>${cells.replace(/<td([^>]*)>/g, (_m: string, attrs: string) => `<td${attrs} data-label="${heads[i++] ?? ""}">`)}</tr>`
+        : row;
+    });
+    return `<div class="hf-table-wrap"><table>${body}</table></div>`;
+  });
+---
+
+<HomeLayout title={doc.data.seoTitle} description={doc.data.subtitle}>
+  <HomeNav client:load />
+  <main class="min-h-screen bg-paper pb-24 pt-28">
+    <div class="mx-auto max-w-5xl px-6 sm:px-8">
+      <div class="flex gap-16">
+        <aside class="hidden w-44 shrink-0 lg:block">
+          <div class="sticky top-32">
+            <p class="mb-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-ink/55">Documentos</p>
+            <nav class="flex flex-col gap-1" aria-label="Documentos legales">
+              {LEGAL_LINKS.map(({ href, label }) => (
+                <a
+                  href={href}
+                  aria-current={currentPath === href ? "page" : undefined}
+                  class:list={[
+                    "rounded-lg px-3 py-2 text-[13px] transition-colors",
+                    currentPath === href ? "bg-ink/[0.06] text-ink" : "text-ink/65 hover:bg-ink/[0.04] hover:text-ink",
+                  ]}
+                >
+                  {label}
+                </a>
+              ))}
+            </nav>
+          </div>
+        </aside>
+
+        <div class="min-w-0 flex-1">
+          <header class="mb-14 border-b border-ink/10 pb-10">
+            <p class="mb-4 text-[10px] font-semibold uppercase tracking-[0.28em] text-ink/55">{doc.data.tag}</p>
+            <h1 class="text-4xl font-semibold leading-[1.08] tracking-[-0.03em] text-ink sm:text-5xl">
+              {doc.data.title}
+            </h1>
+            <p class="mt-4 text-[15px] leading-[1.75] text-ink/65">{doc.data.subtitle}</p>
+            <p class="mt-6 text-[12px] text-ink/50">Última actualización: {LEGAL.lastUpdated}</p>
+            <!-- Enlaces entre documentos en móvil (el lateral solo se ve en escritorio) -->
+            <nav class="mt-6 flex flex-wrap gap-2 lg:hidden" aria-label="Documentos legales">
+              {LEGAL_LINKS.map(({ href, label }) => (
+                <a
+                  href={href}
+                  aria-current={currentPath === href ? "page" : undefined}
+                  class:list={[
+                    "rounded-full border px-3 py-1.5 text-[12px]",
+                    currentPath === href ? "border-ink/40 text-ink" : "border-ink/15 text-ink/65",
+                  ]}
+                >
+                  {label}
+                </a>
+              ))}
+            </nav>
+          </header>
+
+          <article class="hf-prose hf-prose-numbered" set:html={html} />
+
+          <div class="mt-16 rounded-2xl border border-ink/10 bg-ink/[0.03] px-6 py-7 sm:px-8">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink/55">¿Dudas?</p>
+            <p class="mt-2 text-[14px] text-ink/70">
+              Si tienes cualquier pregunta sobre este documento, escríbenos a
+              <a href={`mailto:${SITE.email}`} class="text-ink underline underline-offset-2">
+                {SITE.email}
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</HomeLayout>

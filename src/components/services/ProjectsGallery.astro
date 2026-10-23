@@ -1,0 +1,84 @@
+---
+import LazyVideo from "./LazyVideo.astro";
+
+interface Project {
+  name: string;
+  tag: string;
+  accent: string; // "r,g,b"
+  frame: "phone" | "browser";
+  images?: string[];
+  video?: string;
+  poster?: string;
+}
+interface Props {
+  title: string;
+  items: Project[];
+}
+const { title, items } = Astro.props;
+---
+
+<section class="border-t border-ink/10 bg-surface py-16 sm:py-24">
+  <div class="mx-auto max-w-7xl">
+    <div class="mb-10 flex items-end justify-between gap-6 px-6 sm:mb-12 lg:px-8">
+      <h2 class="hf-reveal text-2xl font-semibold tracking-[-0.035em] text-ink sm:text-3xl lg:text-4xl">{title}</h2>
+      <a href="/contacto" class="hf-reveal shrink-0 text-[14px] font-medium text-brand hover:underline">
+        Cuéntanos tu proyecto →
+      </a>
+    </div>
+
+    <div class="grid gap-6 px-6 sm:grid-cols-2 lg:px-8">
+      {items.map((p, i) => (
+        <article
+          class="hf-reveal group overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-[0_1px_2px_rgba(11,27,51,0.04)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(11,27,51,0.35)]"
+          style={`--hf-delay: ${i * 100}ms`}
+        >
+          <div
+            class="relative aspect-[4/3] overflow-hidden"
+            style={`background: radial-gradient(ellipse at 50% 0%, rgba(${p.accent},0.22), transparent 70%), linear-gradient(180deg, rgba(${p.accent},0.08), rgba(${p.accent},0.02));`}
+          >
+            {p.video && (
+              <LazyVideo src={p.video} poster={p.poster} class="absolute inset-0 h-full w-full object-contain" />
+            )}
+
+            {p.images && p.frame === "phone" && (
+              <div class="absolute left-1/2 top-8 w-[42%] -translate-x-1/2 transition-transform duration-700 group-hover:-translate-y-2">
+                <div class="overflow-hidden rounded-[1.4rem] border border-ink/15 bg-paper shadow-[0_24px_50px_-18px_rgba(11,27,51,0.45)]">
+                  <img
+                    src={p.images[0]}
+                    alt={`Pantalla de ${p.name}`}
+                    loading="lazy"
+                    decoding="async"
+                    class="aspect-[721/1550] w-full object-cover object-top"
+                  />
+                </div>
+              </div>
+            )}
+
+            {p.images && p.frame === "browser" && (
+              <div class="absolute left-[7%] right-[-12%] top-10 transition-transform duration-700 group-hover:-translate-x-2">
+                <div class="overflow-hidden rounded-xl border border-ink/15 bg-paper shadow-[0_24px_50px_-18px_rgba(11,27,51,0.45)]">
+                  <div class="flex items-center gap-1.5 border-b border-ink/10 bg-surface px-3 py-2">
+                    <span class="h-2 w-2 rounded-full bg-[#ff5f57]" />
+                    <span class="h-2 w-2 rounded-full bg-[#febc2e]" />
+                    <span class="h-2 w-2 rounded-full bg-[#28c840]" />
+                  </div>
+                  <img
+                    src={p.images[0]}
+                    alt={`Pantalla de ${p.name}`}
+                    loading="lazy"
+                    decoding="async"
+                    class="aspect-[16/9] w-full object-cover object-left-top"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+          <div class="border-t border-ink/10 p-5 sm:p-6">
+            <span class="text-[12px] font-medium uppercase tracking-[0.14em] text-ink/55">{p.tag}</span>
+            <h3 class="mt-1.5 text-[17px] font-semibold leading-[1.3] text-ink">{p.name}</h3>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

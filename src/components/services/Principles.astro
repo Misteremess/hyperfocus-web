@@ -1,0 +1,22 @@
+---
+interface Props {
+  items: { title: string; desc: string }[];
+}
+const { items } = Astro.props;
+---
+
+<section class="border-t border-ink/10 px-6 py-16 sm:py-24 lg:px-8">
+  <p class="hf-reveal mb-12 text-[11px] font-semibold uppercase tracking-[0.26em] text-ink/55">Nuestra filosofía</p>
+  <div class="grid gap-px overflow-hidden rounded-2xl border border-ink/10 bg-ink/10 sm:grid-cols-3">
+    {items.map((p, i) => (
+      <div
+        class="hf-reveal bg-paper p-8 transition-colors duration-500 hover:bg-ink/[0.03] sm:p-10"
+        style={`--hf-delay: ${i * 100}ms`}
+      >
+        <p class="mb-6 text-[11px] font-semibold text-ink/45">0{i + 1}</p>
+        <h3 class="mb-3 text-[18px] font-semibold leading-[1.2] tracking-[-0.025em] text-ink">{p.title}</h3>
+        <p class="text-[14px] leading-[1.72] text-ink/65">{p.desc}</p>
+      </div>
+    ))}
+  </div>
+</section>

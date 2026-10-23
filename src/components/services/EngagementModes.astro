@@ -1,0 +1,45 @@
+---
+// Orientación de modalidades y precios, común a las páginas de servicios.
+const MODES = [
+  {
+    title: "Presupuesto cerrado",
+    when: "Cuando el proyecto está bien definido.",
+    desc: "Acordamos alcance, plazo y precio total por escrito antes de empezar. Si algo cambia por el camino, lo hablamos y lo presupuestamos aparte.",
+  },
+  {
+    title: "Bolsa de horas",
+    when: "Cuando prefieres ir paso a paso.",
+    desc: "Contratas un número de horas y decidimos juntos en qué se invierten. Ves en todo momento cuántas quedan y en qué se han usado.",
+  },
+  {
+    title: "Mantenimiento mensual",
+    when: "Después de la entrega.",
+    desc: "Una cuota fija para actualizaciones, pequeñas mejoras y soporte. Es opcional: el código es tuyo y puedes llevártelo cuando quieras.",
+  },
+];
+---
+
+<section class="border-t border-ink/10 px-6 py-16 sm:py-24 lg:px-8">
+  <div class="hf-reveal mb-10 sm:mb-14">
+    <p class="mb-4 text-[11px] font-semibold uppercase tracking-[0.26em] text-ink/55">Cómo se contrata</p>
+    <h2 class="max-w-3xl text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.035em] text-ink sm:text-3xl lg:text-[2.75rem]">
+      Tres formas de trabajar con nosotros.
+    </h2>
+    <p class="mt-5 max-w-2xl text-[15px] leading-[1.75] text-ink/65">
+      Te damos el precio antes de empezar, sin letra pequeña. En la primera llamada te orientamos sobre qué modalidad
+      encaja mejor con tu caso.
+    </p>
+  </div>
+  <div class="grid gap-4 md:grid-cols-3">
+    {MODES.map((m, i) => (
+      <div
+        class="hf-reveal rounded-2xl border border-ink/10 bg-ink/[0.03] p-6 transition duration-300 hover:border-ink/25 sm:p-7"
+        style={`--hf-delay: ${i * 70}ms`}
+      >
+        <h3 class="text-[17px] font-semibold tracking-[-0.02em] text-ink">{m.title}</h3>
+        <p class="mt-1 text-[12px] font-medium uppercase tracking-[0.12em] text-ink/55">{m.when}</p>
+        <p class="mt-4 text-[14px] leading-[1.7] text-ink/65">{m.desc}</p>
+      </div>
+    ))}
+  </div>
+</section>

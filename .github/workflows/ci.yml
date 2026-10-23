@@ -1,0 +1,25 @@
+# Comprobaciones en cada PR y en cada push a development/main:
+# tipos (astro check), ESLint, formato (Prettier) y build.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [development, main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run build
+      - name: Comprobar sintaxis de contact.php
+        run: php -l public/api/contact.php

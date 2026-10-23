@@ -23,3 +23,13 @@ smtp_config.php
 
 # jetbrains setting folder
 .idea/
+
+# Ficheros pesados o con licencia de terceros: fuera del repositorio
+*.zip
+/videos/
+
+# Dependencias PHP de desarrollo (PHPMailer se versiona ya copiado en public/api/lib)
+/vendor/
+
+# Originales de imágenes (PNG/JPEG grandes): se publican las versiones WebP de public/images
+/assets-src/

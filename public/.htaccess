@@ -1,9 +1,11 @@
 # ── Hyperfocus — configuración de producción (Hostinger / Apache) ───────────
 # Sitio Astro estático: HTML real por ruta, NO necesita reescritura SPA.
 
-# Forzar HTTPS
+# Forzar HTTPS y dominio sin www (una sola URL canónica: https://hyperfocus.es)
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  RewriteCond %{HTTP_HOST} ^www\.hyperfocus\.es$ [NC]
+  RewriteRule ^ https://hyperfocus.es%{REQUEST_URI} [L,R=301]
   RewriteCond %{HTTPS} off
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>

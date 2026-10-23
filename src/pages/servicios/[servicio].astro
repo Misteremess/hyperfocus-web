@@ -1,0 +1,39 @@
+---
+// /servicios/<id>: contenido en src/content/servicios/<id>.json
+import { getCollection } from "astro:content";
+import HomeLayout from "../../layouts/HomeLayout.astro";
+import HomeNav from "../../components/home/HomeNav";
+import Footer from "../../components/layout/Footer.astro";
+import ServiceHero from "../../components/services/ServiceHero.astro";
+import TechPills from "../../components/services/TechPills.astro";
+import StatsGrid from "../../components/services/StatsGrid.astro";
+import Principles from "../../components/services/Principles.astro";
+import FeatureList from "../../components/services/FeatureList.astro";
+import ProcessList from "../../components/services/ProcessList.astro";
+import EngagementModes from "../../components/services/EngagementModes.astro";
+import ProjectsGallery from "../../components/services/ProjectsGallery.astro";
+import ConceptsGallery from "../../components/services/ConceptsGallery.astro";
+
+export async function getStaticPaths() {
+  const services = await getCollection("servicios");
+  return services.map((s) => ({ params: { servicio: s.id }, props: { service: s.data } }));
+}
+
+const { service: s } = Astro.props;
+---
+
+<HomeLayout title={s.seo.title} description={s.seo.description}>
+  <HomeNav client:load />
+  <main class="bg-paper text-ink">
+    <ServiceHero eyebrow={s.hero.eyebrow} title={s.hero.title} intro={s.hero.intro} />
+    {s.tech && <TechPills {...s.tech} />}
+    {s.stats && <StatsGrid stats={s.stats} />}
+    {s.principles && <Principles items={s.principles} />}
+    <FeatureList {...s.features} />
+    <ProcessList {...s.process} />
+    <EngagementModes />
+    {s.projects && <ProjectsGallery {...s.projects} />}
+    {s.concepts && <ConceptsGallery items={s.concepts} />}
+  </main>
+  <Footer />
+</HomeLayout>

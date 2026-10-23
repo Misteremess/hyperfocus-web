@@ -1,0 +1,47 @@
+# Despliegue automático a Hostinger al hacer merge a main.
+# Sube el contenido de dist/ a public_html por FTPS. Nunca toca smtp_config.php
+# (vive fuera de public_html, un nivel por encima).
+#
+# Secretos necesarios en GitHub > Settings > Secrets and variables > Actions:
+#   FTP_SERVER       p. ej. ftp.hyperfocus.es (hPanel > Archivos > Cuentas FTP)
+#   FTP_USERNAME     usuario FTP
+#   FTP_PASSWORD     contraseña FTP
+#   PUBLIC_TURNSTILE_SITE_KEY  clave pública de Cloudflare Turnstile (opcional)
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run ci
+        env:
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.PUBLIC_TURNSTILE_SITE_KEY }}
+      - name: Subir dist/ a public_html
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./dist/
+          server-dir: ./public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/smtp_config.php

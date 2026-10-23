@@ -1,0 +1,161 @@
+{
+  "order": 1,
+  "seo": {
+    "title": "Software a medida | Hyperfocus",
+    "description": "Software a medida para pymes desde Toledo: aplicaciones web, herramientas internas y conexiones entre sistemas. Presupuesto cerrado o por horas."
+  },
+  "card": {
+    "title": "Software a medida",
+    "desc": "Aplicaciones y herramientas internas a medida para cuando un Excel o un programa genérico ya no dan más."
+  },
+  "hero": {
+    "eyebrow": "Servicios — Software a medida",
+    "title": "Software que se adapta a tu negocio, no al revés.",
+    "intro": "Aplicaciones y herramientas internas para pymes que han superado lo que puede hacer un Excel o un programa genérico."
+  },
+  "tech": {
+    "intro": "Tecnologías conocidas y con soporte a largo plazo, para que cualquier equipo pueda mantener el código.",
+    "items": [
+      "TypeScript",
+      "React",
+      "Next.js",
+      "Node.js",
+      "Python",
+      "PostgreSQL",
+      "MongoDB",
+      "Redis",
+      "Docker",
+      "AWS",
+      "GCP",
+      "Prisma",
+      "GraphQL",
+      "REST",
+      "WebSockets",
+      "Tailwind CSS"
+    ]
+  },
+  "stats": [
+    {
+      "value": "100%",
+      "label": "Lo programamos nosotros. Sin subcontratar tu proyecto."
+    },
+    {
+      "value": "1:1",
+      "label": "Trato directo con quien diseña y programa tu producto."
+    },
+    {
+      "value": "0",
+      "label": "Ataduras: el código y los accesos son tuyos desde el primer día."
+    }
+  ],
+  "features": {
+    "eyebrow": "Qué construimos",
+    "title": "De la idea a la herramienta funcionando.",
+    "intro": "Nos ocupamos de todo el proceso, desde el análisis hasta la puesta en marcha, sin subcontratar ninguna parte.",
+    "items": [
+      {
+        "icon": "grid",
+        "label": "Aplicaciones web con usuarios",
+        "desc": "Plataformas con cuentas de usuario, varios clientes o empresas en la misma aplicación, cobros por suscripción y panel de administración."
+      },
+      {
+        "icon": "bars",
+        "label": "Conexiones entre sistemas (APIs)",
+        "desc": "La parte que no se ve: servidores y APIs para que tu web, tu app o tus programas de gestión compartan datos sin copiarlos a mano."
+      },
+      {
+        "icon": "radar",
+        "label": "Herramientas internas",
+        "desc": "Paneles de control, gestión de pedidos, inventario o clientes: herramientas a medida que sustituyen hojas de cálculo y procesos manuales."
+      },
+      {
+        "icon": "shield",
+        "label": "Servidores y mantenimiento",
+        "desc": "Ponemos el software en marcha en servidores fiables, con copias de seguridad, avisos si algo falla y actualizaciones automáticas."
+      }
+    ]
+  },
+  "process": {
+    "title": "Cómo trabajamos.",
+    "intro": "Entregas por partes, trato directo y avances que puedes probar desde el principio.",
+    "steps": [
+      {
+        "title": "Análisis y planificación",
+        "desc": "Entendemos el problema, decidimos cómo construirlo y acordamos por escrito qué se va a hacer antes de programar nada."
+      },
+      {
+        "title": "Diseño de producto",
+        "desc": "Dibujamos las pantallas y los pasos que seguirá cada usuario para que puedas validarlos antes de que empecemos a programar."
+      },
+      {
+        "title": "Desarrollo por partes",
+        "desc": "Entregamos en bloques cortos. Cada avance lo publicamos en un entorno de pruebas para que lo uses y nos digas qué cambiar."
+      },
+      {
+        "title": "Puesta en marcha y soporte",
+        "desc": "Lo ponemos en funcionamiento con documentación, vigilancia de errores y soporte después de la entrega."
+      }
+    ]
+  },
+  "concepts": [
+    {
+      "name": "Panel de administración y facturación",
+      "sector": "SaaS B2B",
+      "image": "/images/conceptos/saas-b2b-panel-de-administracion-y-billing.webp"
+    },
+    {
+      "name": "API de pagos y conciliación bancaria",
+      "sector": "Fintech",
+      "image": "/images/conceptos/fintech-api-de-pagos-y-conciliacion-bancaria.webp"
+    },
+    {
+      "name": "Portal de gestión de pacientes",
+      "sector": "Salud",
+      "image": "/images/conceptos/salud-portal-de-gestion-de-pacientes.webp"
+    },
+    {
+      "name": "Panel de flota en tiempo real",
+      "sector": "Logística",
+      "image": "/images/conceptos/logistica-dashboard-de-flota-en-tiempo-real.webp"
+    },
+    {
+      "name": "Portal de clientes y gestión documental",
+      "sector": "Legal",
+      "image": "/images/conceptos/legal-portal-de-clientes-y-gestion-documental.webp"
+    },
+    {
+      "name": "Motor de recomendaciones con aprendizaje automático",
+      "sector": "E-commerce",
+      "image": "/images/conceptos/e-commerce-motor-de-recomendaciones-con-ml.webp"
+    }
+  ],
+  "projects": {
+    "title": "Lo que ya hemos construido.",
+    "items": [
+      {
+        "name": "Elevate — Alertas de licitaciones públicas con IA",
+        "tag": "Producto propio · En producción",
+        "accent": "16,185,129",
+        "frame": "browser",
+        "images": [
+          "/images/elevate/dashboard-800.webp",
+          "/images/elevate/buscador-800.webp",
+          "/images/elevate/licitacion-individual-800.webp",
+          "/images/elevate/noa-asistente-ia-800.webp"
+        ]
+      },
+      {
+        "name": "ChillPocket — App de finanzas personales",
+        "tag": "Producto propio · App gratuita",
+        "accent": "99,102,241",
+        "images": [
+          "/images/chillpocket/home.webp",
+          "/images/chillpocket/movimientos.webp",
+          "/images/chillpocket/analitica.webp",
+          "/images/chillpocket/habitos.webp",
+          "/images/chillpocket/inversion.webp"
+        ]
+      }
+    ]
+  }
+}

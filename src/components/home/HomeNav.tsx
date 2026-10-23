@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "motion/react";
+import { MotionConfig, motion, AnimatePresence } from "motion/react";
 import { NAV_ITEMS, type NavItem } from "../../data/site";
 
 // ─── Dropdown panel ────────────────────────────────────────────────────────────
@@ -11,30 +11,29 @@ const listVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: -6 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
-type DropdownItem = NavItem & Required<Pick<NavItem, 'section' | 'links' | 'card'>>;
+type DropdownItem = NavItem & Required<Pick<NavItem, "section" | "links" | "card">>;
 
 function NavDropdown({
   item,
+  id,
   onEnter,
   onLeave,
 }: {
   item: DropdownItem;
+  id: string;
   onEnter: () => void;
   onLeave: () => void;
 }) {
   const alignClass =
-    item.align === "left"
-      ? "left-0"
-      : item.align === "right"
-        ? "right-0"
-        : "left-1/2 -translate-x-1/2";
+    item.align === "left" ? "left-0" : item.align === "right" ? "right-0" : "left-1/2 -translate-x-1/2";
 
   return (
     <motion.div
-      className={`absolute top-full z-50 w-[540px] overflow-hidden rounded-2xl border border-white/15 bg-black/90 shadow-2xl backdrop-blur-2xl ${alignClass}`}
+      id={id}
+      className={`absolute top-full z-50 w-[540px] overflow-hidden rounded-2xl border border-ink/15 bg-paper/90 shadow-2xl backdrop-blur-2xl ${alignClass}`}
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
@@ -45,15 +44,13 @@ function NavDropdown({
       <div className="flex gap-5 p-6">
         {/* Left: section label + links */}
         <div className="flex-1">
-          <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30">
-            {item.section}
-          </p>
+          <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/55">{item.section}</p>
           <motion.ul variants={listVariants} initial="hidden" animate="show" className="space-y-0.5">
             {item.links.map((link) => (
               <motion.li key={link.href} variants={itemVariants}>
                 <a
                   href={link.href}
-                  className="group flex items-center rounded-lg px-2 py-2.5 text-[14px] text-white/55 transition-colors duration-150 hover:bg-white/5 hover:text-white"
+                  className="group flex items-center rounded-lg px-2 py-2.5 text-[14px] text-ink/75 transition-colors duration-150 hover:bg-ink/5 hover:text-ink"
                 >
                   {link.label}
                 </a>
@@ -65,7 +62,7 @@ function NavDropdown({
         {/* Right: clickable card */}
         <motion.a
           href={item.card.href}
-          className="group relative flex w-[180px] shrink-0 flex-col justify-end overflow-hidden rounded-xl bg-white/5 p-4"
+          className="group relative flex w-[180px] shrink-0 flex-col justify-end overflow-hidden rounded-xl bg-ink/5 p-4"
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.25, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
@@ -78,14 +75,12 @@ function NavDropdown({
                 "radial-gradient(circle at 70% 30%, rgba(79,214,255,0.15), transparent 60%), radial-gradient(circle at 20% 80%, rgba(120,80,255,0.1), transparent 50%)",
             }}
           />
-          <div className="absolute inset-0 border border-white/8 rounded-xl" />
+          <div className="absolute inset-0 border border-ink/8 rounded-xl" />
 
           <div className="relative z-10 mt-auto">
-            <p className="text-[13px] font-semibold text-white">{item.card.title}</p>
-            <p className="mt-1 text-[11px] leading-[1.5] text-white/45">
-              {item.card.description}
-            </p>
-            <div className="mt-3 flex h-6 w-6 items-center justify-center rounded-full border border-white/20 text-[11px] text-white/50 transition-all duration-200 group-hover:border-white/60 group-hover:text-white">
+            <p className="text-[13px] font-semibold text-ink">{item.card.title}</p>
+            <p className="mt-1 text-[11px] leading-[1.5] text-ink/65">{item.card.description}</p>
+            <div className="mt-3 flex h-6 w-6 items-center justify-center rounded-full border border-ink/20 text-[11px] text-ink/50 transition-all duration-200 group-hover:border-ink/60 group-hover:text-ink">
               →
             </div>
           </div>
@@ -107,7 +102,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[60] flex flex-col bg-black/95 backdrop-blur-2xl lg:hidden"
+          className="fixed inset-0 z-[60] flex flex-col bg-paper/95 backdrop-blur-2xl lg:hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -115,16 +110,28 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
         >
           {/* Cabecera del overlay: logo + cerrar */}
           <div className="flex h-[72px] shrink-0 items-center justify-between px-6">
-            <a href="/" onClick={onClose} className="flex items-center gap-3 text-[16px] font-semibold uppercase tracking-[0.24em] text-white">
-              <img src="/brand/logo_blanco_acento.svg" alt="Hyperfocus" width="145" height="150" className="h-7 w-auto" />
+            <a
+              href="/"
+              onClick={onClose}
+              className="flex items-center gap-3 text-[16px] font-semibold uppercase tracking-[0.24em] text-ink"
+            >
+              <img src="/brand/logo_oscuro_acento.svg" alt="" width="145" height="150" className="h-7 w-auto" />
               Hyperfocus
             </a>
             <button
               onClick={onClose}
               aria-label="Cerrar menú"
-              className="flex h-6 w-7 items-center justify-center text-white"
+              className="flex h-6 w-7 items-center justify-center text-ink"
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              >
                 <path d="M6 6l12 12M18 6L6 18" />
               </svg>
             </button>
@@ -137,7 +144,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-6 inline-flex items-center justify-center gap-2 rounded-full border border-white/25 px-6 py-3.5 text-[15px] font-medium text-white transition-all duration-200 hover:border-white/60 hover:bg-white/10"
+              className="mb-6 inline-flex items-center justify-center gap-2 rounded-full border border-ink/25 px-6 py-3.5 text-[15px] font-medium text-ink transition-all duration-200 hover:border-ink/60 hover:bg-ink/10"
             >
               Ponerse en contacto
               <span className="text-[11px] opacity-70">→</span>
@@ -149,17 +156,17 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 + i * 0.05, ease: [0.22, 1, 0.36, 1] }}
-                className="border-b border-white/8 py-3"
+                className="border-b border-ink/8 py-3"
               >
                 {item.labelClickable === false ? (
-                  <span className="block text-2xl font-light tracking-[-0.01em] text-white/85 select-none">
+                  <span className="block text-2xl font-light tracking-[-0.01em] text-ink/85 select-none">
                     {item.label}
                   </span>
                 ) : (
                   <a
                     href={item.href}
                     onClick={onClose}
-                    className="block text-2xl font-light tracking-[-0.01em] text-white"
+                    className="block text-2xl font-light tracking-[-0.01em] text-ink"
                   >
                     {item.label}
                   </a>
@@ -171,7 +178,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
                         key={link.href}
                         href={link.href}
                         onClick={onClose}
-                        className="text-[14px] text-white/45 transition-colors hover:text-white"
+                        className="text-[14px] text-ink/70 transition-colors hover:text-ink"
                       >
                         {link.label}
                       </a>
@@ -194,6 +201,27 @@ export default function HomeNav() {
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+  // Con ratón el desplegable ya se abre al pasar por encima: un clic justo
+  // después no debe cerrarlo.
+  const hoverOpenedAt = useRef(0);
+
+  // Escape cierra el desplegable; un clic fuera también (táctil / tablet).
+  useEffect(() => {
+    if (!activeItem) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActiveItem(null);
+    };
+    const onPointer = (e: PointerEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setActiveItem(null);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+    };
+  }, [activeItem]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -216,7 +244,13 @@ export default function HomeNav() {
 
   const handleEnter = (label: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
+    if (activeItem !== label) hoverOpenedAt.current = Date.now();
     setActiveItem(label);
+  };
+
+  const handleToggle = (label: string) => {
+    if (activeItem === label && Date.now() - hoverOpenedAt.current < 600) return;
+    setActiveItem(activeItem === label ? null : label);
   };
 
   const handleLeave = () => {
@@ -224,108 +258,116 @@ export default function HomeNav() {
   };
 
   return (
-    <header
-      className="fixed left-0 top-0 z-50 w-full transition-all duration-500"
-      style={{
-        background: scrolled || activeItem || mobileOpen ? "rgba(0,0,0,0.65)" : "transparent",
-        backdropFilter: scrolled || activeItem || mobileOpen ? "blur(20px)" : "none",
-        WebkitBackdropFilter: scrolled || activeItem || mobileOpen ? "blur(20px)" : "none",
-      }}
-    >
-      <div className="flex h-[72px] items-center justify-between px-6 lg:px-8">
-        {/* Logo */}
-        <a
-          href="/"
-          className="flex items-center gap-3 text-[16px] font-semibold uppercase tracking-[0.24em] text-white"
-        >
-          <img src="/brand/logo_blanco_acento.svg" alt="Hyperfocus" width="145" height="150" className="h-7 w-auto" />
-          Hyperfocus
-        </a>
+    <MotionConfig reducedMotion="user">
+      <header
+        className="fixed left-0 top-0 z-50 w-full transition-all duration-500"
+        style={{
+          background: scrolled || activeItem || mobileOpen ? "rgba(255,255,255,0.88)" : "transparent",
+          boxShadow: scrolled || activeItem ? "0 1px 0 rgba(11,27,51,0.08)" : "none",
+          backdropFilter: scrolled || activeItem || mobileOpen ? "blur(20px)" : "none",
+          WebkitBackdropFilter: scrolled || activeItem || mobileOpen ? "blur(20px)" : "none",
+        }}
+      >
+        <div className="flex h-[72px] items-center justify-between px-6 lg:px-8">
+          {/* Logo */}
+          <a
+            href="/"
+            className="flex items-center gap-3 text-[16px] font-semibold uppercase tracking-[0.24em] text-ink"
+          >
+            <img src="/brand/logo_oscuro_acento.svg" alt="" width="145" height="150" className="h-7 w-auto" />
+            Hyperfocus
+          </a>
 
-        {/* Nav items */}
-        <nav className="hidden items-center gap-6 lg:flex">
-          {NAV_ITEMS.map((item) => {
-            const isActive = activeItem === item.label;
-            const activeColor = isActive ? "rgba(255,255,255,1)" : "";
-            return (
-              <div
-                key={item.label}
-                className="relative flex h-[72px] items-center"
-                onMouseEnter={() => item.hasDropdown !== false ? handleEnter(item.label) : undefined}
-                onMouseLeave={() => item.hasDropdown !== false ? handleLeave() : undefined}
-              >
-                {item.labelClickable === false ? (
-                  <span
-                    className="flex items-center text-[13px] text-white/55 transition-colors duration-200 select-none"
-                    style={{ color: activeColor, cursor: "default" }}
-                  >
-                    {item.label}
-                  </span>
-                ) : (
-                  <a
-                    href={item.href}
-                    className="flex items-center text-[13px] text-white/55 transition-colors duration-200 hover:text-white"
-                    style={{ color: activeColor }}
-                  >
-                    {item.label}
-                  </a>
-                )}
+          {/* Nav items */}
+          <nav ref={navRef} aria-label="Principal" className="hidden items-center gap-6 lg:flex">
+            {NAV_ITEMS.map((item) => {
+              const isActive = activeItem === item.label;
+              const activeColor = isActive ? "var(--color-ink)" : "";
+              return (
+                <div
+                  key={item.label}
+                  className="relative flex h-[72px] items-center"
+                  onMouseEnter={() => (item.hasDropdown !== false ? handleEnter(item.label) : undefined)}
+                  onMouseLeave={() => (item.hasDropdown !== false ? handleLeave() : undefined)}
+                >
+                  {item.labelClickable === false ? (
+                    <button
+                      type="button"
+                      aria-expanded={isActive}
+                      aria-controls={`nav-dd-${item.label}`}
+                      onClick={() => handleToggle(item.label)}
+                      className="flex items-center gap-1 text-[13px] text-ink/75 transition-colors duration-200 hover:text-ink"
+                      style={{ color: activeColor }}
+                    >
+                      {item.label}
+                      <span aria-hidden="true" className="text-[9px] opacity-70">
+                        ▾
+                      </span>
+                    </button>
+                  ) : (
+                    <a
+                      href={item.href}
+                      className="flex items-center text-[13px] text-ink/75 transition-colors duration-200 hover:text-ink"
+                      style={{ color: activeColor }}
+                    >
+                      {item.label}
+                    </a>
+                  )}
 
-                {item.hasDropdown !== false && (
-                  <AnimatePresence>
-                    {isActive && (
-                      <NavDropdown
-                        item={item as DropdownItem}
-                        onEnter={() => handleEnter(item.label)}
-                        onLeave={handleLeave}
-                      />
-                    )}
-                  </AnimatePresence>
-                )}
-              </div>
-            );
-          })}
-        </nav>
+                  {item.hasDropdown !== false && (
+                    <AnimatePresence>
+                      {isActive && (
+                        <NavDropdown
+                          id={`nav-dd-${item.label}`}
+                          item={item as DropdownItem}
+                          onEnter={() => handleEnter(item.label)}
+                          onLeave={handleLeave}
+                        />
+                      )}
+                    </AnimatePresence>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
 
-        {/* CTA */}
-        <a
-          href="/contacto"
-          className="hidden items-center gap-2 rounded-full border border-white/25 px-6 py-2.5 text-[15px] font-medium text-white transition-all duration-200 hover:border-white/60 hover:bg-white/10 lg:inline-flex"
-        >
-          Ponerse en contacto
-          <span className="text-[11px] opacity-70">→</span>
-        </a>
+          {/* CTA */}
+          <a
+            href="/contacto"
+            className="hidden items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-[14px] font-semibold text-paper transition-all duration-200 hover:bg-ink/90 lg:inline-flex"
+          >
+            Ponerse en contacto
+            <span className="text-[11px] opacity-70">→</span>
+          </a>
 
-        {/* Mobile hamburger */}
-        <button
-          className="relative z-50 flex h-6 w-7 flex-col items-end justify-center gap-[5px] lg:hidden"
-          aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
-          aria-expanded={mobileOpen}
-          onClick={() => setMobileOpen((v) => !v)}
-        >
-          <span
-            className="h-px bg-white transition-all duration-300"
-            style={{
-              width: mobileOpen ? "1.5rem" : "1.5rem",
-              transform: mobileOpen ? "translateY(6px) rotate(45deg)" : "none",
-            }}
-          />
-          <span
-            className="h-px w-4 bg-white/60 transition-all duration-300"
-            style={{ opacity: mobileOpen ? 0 : 1 }}
-          />
-          <span
-            className="h-px bg-white/40 transition-all duration-300"
-            style={{
-              width: mobileOpen ? "1.5rem" : "1.25rem",
-              background: mobileOpen ? "#fff" : undefined,
-              transform: mobileOpen ? "translateY(-6px) rotate(-45deg)" : "none",
-            }}
-          />
-        </button>
-      </div>
+          {/* Mobile hamburger */}
+          <button
+            className="relative z-50 flex h-6 w-7 flex-col items-end justify-center gap-[5px] lg:hidden"
+            aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            <span
+              className="h-px bg-ink transition-all duration-300"
+              style={{
+                width: mobileOpen ? "1.5rem" : "1.5rem",
+                transform: mobileOpen ? "translateY(6px) rotate(45deg)" : "none",
+              }}
+            />
+            <span className="h-px w-4 bg-ink/60 transition-all duration-300" style={{ opacity: mobileOpen ? 0 : 1 }} />
+            <span
+              className="h-px bg-ink/40 transition-all duration-300"
+              style={{
+                width: mobileOpen ? "1.5rem" : "1.25rem",
+                background: mobileOpen ? "var(--color-ink)" : undefined,
+                transform: mobileOpen ? "translateY(-6px) rotate(-45deg)" : "none",
+              }}
+            />
+          </button>
+        </div>
 
-      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
-    </header>
+        <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      </header>
+    </MotionConfig>
   );
 }

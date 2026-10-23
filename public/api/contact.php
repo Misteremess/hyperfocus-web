@@ -3,13 +3,14 @@
 // La contraseña NUNCA se guarda en el repositorio. Se lee de una variable de
 // entorno o de un fichero PHP fuera del docroot (p. ej. junto a public_html
 // en Hostinger), que devuelve el valor con `return`.
-$smtpPass = getenv('SMTP_PASS') ?: '';
-if ($smtpPass === '') {
-    $externalConfig = dirname(__DIR__, 2) . '/smtp_config.php';
-    if (is_file($externalConfig)) {
-        $smtpPass = (string) require $externalConfig;
-    }
-}
+// El fichero puede devolver la contraseña como string (formato antiguo) o un
+// array ['smtp_pass' => ..., 'turnstile_secret' => ...].
+$externalConfig = dirname(__DIR__, 2) . '/smtp_config.php';
+$config = is_file($externalConfig) ? require $externalConfig : [];
+if (!is_array($config)) $config = ['smtp_pass' => (string) $config];
+
+$smtpPass        = getenv('SMTP_PASS') ?: (string) ($config['smtp_pass'] ?? '');
+$turnstileSecret = getenv('TURNSTILE_SECRET') ?: (string) ($config['turnstile_secret'] ?? '');
 
 define('SMTP_HOST', 'smtp.hostinger.com');
 define('SMTP_PORT', 587);                        // STARTTLS
@@ -69,142 +70,107 @@ if (!is_array($data)) { http_response_code(400); echo json_encode(['success' => 
 // Honeypot
 if (!empty($data['company_url'])) { echo json_encode(['success' => true]); exit; }
 
+// ── Cloudflare Turnstile ─────────────────────────────────────────────────────
+// Solo se exige si hay clave secreta configurada (así el formulario no se
+// rompe mientras no estén dadas de alta las claves).
+if ($turnstileSecret !== '') {
+    $token = is_string($data['turnstileToken'] ?? null) ? $data['turnstileToken'] : '';
+    $verified = false;
+    if ($token !== '') {
+        $ctx = stream_context_create(['http' => [
+            'method'  => 'POST',
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => http_build_query(['secret' => $turnstileSecret, 'response' => $token, 'remoteip' => $ip]),
+            'timeout' => 10,
+        ]]);
+        $resp = @file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify', false, $ctx);
+        $json = $resp ? json_decode($resp, true) : null;
+        $verified = is_array($json) && !empty($json['success']);
+    }
+    if (!$verified) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'No hemos podido verificar que no eres un robot. Recarga la página e inténtalo de nuevo.']);
+        exit;
+    }
+}
+
 // Validación
-foreach (['nombre','empresa','email','comoNosConocio','ayuda','compromiso','hito','inversion'] as $f) {
-    if (empty($data[$f])) {
+foreach (['nombre','email','mensaje'] as $f) {
+    if (empty($data[$f]) || !is_string($data[$f])) {
         http_response_code(400);
         echo json_encode(['success' => false, 'error' => 'Faltan campos obligatorios.']);
         exit;
     }
 }
-$email = filter_var(trim($data['email']), FILTER_VALIDATE_EMAIL);
+$email = filter_var(str_replace(["\r", "\n"], '', trim($data['email'])), FILTER_VALIDATE_EMAIL);
 if (!$email) { http_response_code(400); echo json_encode(['success' => false, 'error' => 'Email inválido.']); exit; }
 
 function s(string $v): string {
     return htmlspecialchars(strip_tags(trim($v)), ENT_QUOTES, 'UTF-8');
 }
+
 $nombre         = s($data['nombre']);
-$empresa        = s($data['empresa']);
-$telefono       = s($data['telefono'] ?? '');
-$comoNosConocio = s($data['comoNosConocio']);
-$ayuda          = s($data['ayuda']);
-$compromiso     = s($data['compromiso']);
-$hito           = s($data['hito']);
-$inversion      = s($data['inversion']);
+$telefono       = s(is_string($data['telefono'] ?? null) ? $data['telefono'] : '');
+$mensaje        = s(function_exists('mb_substr') ? mb_substr($data['mensaje'], 0, 3000) : substr($data['mensaje'], 0, 3000));
 
-// ── SMTP ─────────────────────────────────────────────────────────────────────
+// ── SMTP (PHPMailer) ─────────────────────────────────────────────────────────
+// PHPMailer se encarga de STARTTLS, la autenticación, la codificación de
+// cabeceras (sin inyección de saltos de línea) y de comprobar cada respuesta
+// del servidor. Copia sin Composer en api/lib/PHPMailer (ver VERSION).
 
-function smtp_readline($socket): string {
-    $line = '';
-    while (!feof($socket)) {
-        $ch = fgetc($socket);
-        $line .= $ch;
-        if ($ch === "\n") break;
-    }
-    return $line;
-}
+require_once __DIR__ . '/lib/PHPMailer/Exception.php';
+require_once __DIR__ . '/lib/PHPMailer/PHPMailer.php';
+require_once __DIR__ . '/lib/PHPMailer/SMTP.php';
 
-function smtp_read_response($socket): string {
-    $last = '';
-    do {
-        $last = smtp_readline($socket);
-    } while (strlen($last) >= 4 && $last[3] === '-');
-    return $last;
-}
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception as MailerException;
 
-function smtp_send(string $to, string $toName, string $subject, string $plainBody, array $extraHeaders = [], string $htmlBody = ''): bool {
-    $socket = @stream_socket_client('tcp://' . SMTP_HOST . ':' . SMTP_PORT, $errno, $errstr, 15);
-    if (!$socket) return false;
+function smtp_send(string $to, string $toName, string $subject, string $plainBody, ?array $replyTo = null, string $htmlBody = ''): bool {
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host       = SMTP_HOST;
+        $mail->Port       = SMTP_PORT;
+        $mail->SMTPAuth   = true;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Username   = SMTP_USER;
+        $mail->Password   = SMTP_PASS;
+        $mail->Timeout    = 15;
+        $mail->CharSet    = PHPMailer::CHARSET_UTF8;
+        $mail->Encoding   = PHPMailer::ENCODING_BASE64;
 
-    stream_set_timeout($socket, 15);
+        $mail->setFrom(MAIL_FROM, 'Hyperfocus');
+        $mail->addAddress($to, $toName);
+        if ($replyTo) {
+            $mail->addReplyTo($replyTo['email'], $replyTo['name'] ?? '');
+        }
 
-    $w = function(string $cmd) use ($socket) { fwrite($socket, $cmd . "\r\n"); };
-    $r = function() use ($socket) { return smtp_read_response($socket); };
+        $mail->Subject = $subject;
+        if ($htmlBody !== '') {
+            $mail->isHTML(true);
+            $mail->Body    = $htmlBody;
+            $mail->AltBody = $plainBody;
+        } else {
+            $mail->Body = $plainBody;
+        }
 
-    $r(); // 220 greeting
-    $w('EHLO ' . gethostname());
-    $r();
-    $w('STARTTLS');
-    $r(); // 220 Go ahead
-    if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
-        fclose($socket);
+        return $mail->send();
+    } catch (MailerException $e) {
+        error_log('contact.php: ' . $mail->ErrorInfo);
         return false;
     }
-    $w('EHLO ' . gethostname());
-    $r();
-    $w('AUTH LOGIN');
-    $r(); // 334
-    $w(base64_encode(SMTP_USER));
-    $r(); // 334
-    $w(base64_encode(SMTP_PASS));
-    $authResp = $r(); // 235 o error
-    if (strpos($authResp, '235') !== 0) { fclose($socket); return false; }
-
-    $w('MAIL FROM:<' . MAIL_FROM . '>');
-    $r();
-    $w('RCPT TO:<' . $to . '>');
-    $r();
-    $w('DATA');
-    $r(); // 354
-
-    $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-    $msg  = 'From: Hyperfocus <' . MAIL_FROM . ">\r\n";
-    $msg .= 'To: ' . $toName . ' <' . $to . ">\r\n";
-    $msg .= 'Subject: ' . $encodedSubject . "\r\n";
-    $msg .= "MIME-Version: 1.0\r\n";
-    foreach ($extraHeaders as $k => $v) {
-        $msg .= "$k: $v\r\n";
-    }
-
-    if ($htmlBody !== '') {
-        $boundary = 'hf_' . bin2hex(random_bytes(8));
-        $msg .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
-        $msg .= "\r\n";
-        $msg .= "--$boundary\r\n";
-        $msg .= "Content-Type: text/plain; charset=UTF-8\r\n";
-        $msg .= "Content-Transfer-Encoding: base64\r\n";
-        $msg .= "\r\n";
-        $msg .= chunk_split(base64_encode($plainBody));
-        $msg .= "--$boundary\r\n";
-        $msg .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $msg .= "Content-Transfer-Encoding: base64\r\n";
-        $msg .= "\r\n";
-        $msg .= chunk_split(base64_encode($htmlBody));
-        $msg .= "--$boundary--\r\n";
-    } else {
-        $msg .= "Content-Type: text/plain; charset=UTF-8\r\n";
-        $msg .= "Content-Transfer-Encoding: base64\r\n";
-        $msg .= "\r\n" . chunk_split(base64_encode($plainBody));
-    }
-
-    // Dot-stuffing
-    $msg = preg_replace('/^\.$/m', '..', $msg);
-
-    $w($msg);
-    $w('.');
-    $dataResp = $r();
-
-    $w('QUIT');
-    fclose($socket);
-
-    return strpos($dataResp, '250') === 0;
 }
 
 // ── Correo interno (para vosotros) ───────────────────────────────────────────
 
-$asunto = "Nueva solicitud · $nombre ($empresa)";
+$asunto = str_replace(["\r", "\n"], ' ', html_entity_decode("Nueva solicitud · $nombre", ENT_QUOTES, 'UTF-8'));
 
 $cuerpoPlano  = "Nombre:   $nombre\n";
-$cuerpoPlano .= "Empresa:  $empresa\n";
 $cuerpoPlano .= "Email:    $email\n";
 $cuerpoPlano .= "Teléfono: " . ($telefono ?: '—') . "\n";
-$cuerpoPlano .= "Cómo nos conoció: $comoNosConocio\n\n";
-$cuerpoPlano .= "Proyecto:\n$ayuda\n\n";
-$cuerpoPlano .= "Tipo de compromiso: $compromiso\n";
-$cuerpoPlano .= "Hito / fecha:       $hito\n";
-$cuerpoPlano .= "Inversión prevista: $inversion\n";
+$cuerpoPlano .= "\nMensaje:\n$mensaje\n";
 
-$ayudaHtml       = nl2br($ayuda);
+$mensajeHtml     = nl2br($mensaje);
 $telefonoDisplay = $telefono ?: '—';
 
 $cuerpoHtml = <<<HTML
@@ -232,7 +198,6 @@ $cuerpoHtml = <<<HTML
           <td style="padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.07);">
             <p style="margin:0 0 6px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.25);">Nueva solicitud</p>
             <h1 style="margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:26px;font-weight:600;letter-spacing:-0.02em;color:#ffffff;">$nombre</h1>
-            <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,0.35);">$empresa</p>
           </td>
         </tr>
 
@@ -259,47 +224,13 @@ $cuerpoHtml = <<<HTML
                 </td>
               </tr>
 
-              <!-- Cómo nos conoció -->
-              <tr>
-                <td style="padding-bottom:20px;">
-                  <p style="margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);">Cómo nos conoció</p>
-                  <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,0.75);">$comoNosConocio</p>
-                </td>
-              </tr>
-
-              <!-- Proyecto -->
+              <!-- Mensaje -->
               <tr>
                 <td style="padding-bottom:24px;">
-                  <p style="margin:0 0 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);">Proyecto</p>
+                  <p style="margin:0 0 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);">Mensaje</p>
                   <div style="background-color:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px 18px;">
-                    <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.7;color:rgba(255,255,255,0.75);">$ayudaHtml</p>
+                    <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.7;color:rgba(255,255,255,0.75);">$mensajeHtml</p>
                   </div>
-                </td>
-              </tr>
-
-              <!-- Fila: Compromiso + Inversión -->
-              <tr>
-                <td style="padding-bottom:20px;">
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                    <tr>
-                      <td width="50%" style="padding-right:10px;">
-                        <p style="margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);">Tipo de compromiso</p>
-                        <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,0.75);">$compromiso</p>
-                      </td>
-                      <td width="50%" style="padding-left:10px;">
-                        <p style="margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);">Inversión prevista</p>
-                        <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,0.75);">$inversion</p>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-
-              <!-- Hito -->
-              <tr>
-                <td style="padding-bottom:32px;">
-                  <p style="margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);">Hito clave / fecha</p>
-                  <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,0.75);">$hito</p>
                 </td>
               </tr>
 
@@ -335,7 +266,7 @@ $cuerpoHtml = <<<HTML
 </html>
 HTML;
 
-$enviado = smtp_send(MAIL_TO, 'Hyperfocus', $asunto, $cuerpoPlano, ['Reply-To' => "$nombre <$email>"], $cuerpoHtml);
+$enviado = smtp_send(MAIL_TO, 'Hyperfocus', $asunto, $cuerpoPlano, ['email' => $email, 'name' => trim(preg_replace('/\s+/', ' ', strip_tags($data['nombre'])))], $cuerpoHtml);
 
 if (!$enviado) {
     http_response_code(500);
@@ -347,14 +278,11 @@ if (!$enviado) {
 
 $asuntoUser = 'Hemos recibido tu mensaje — Hyperfocus';
 
-$cuerpoUserPlano  = "Hola $nombre,\n\n";
-$cuerpoUserPlano .= "Hemos recibido tu mensaje y te responderemos en menos de 48 horas.\n\n";
-$cuerpoUserPlano .= "Resumen de tu solicitud:\n";
-$cuerpoUserPlano .= "──────────────────────────\n";
-$cuerpoUserPlano .= "Empresa:    $empresa\n";
-$cuerpoUserPlano .= "Proyecto:   $ayuda\n";
-$cuerpoUserPlano .= "Inversión:  $inversion\n";
-$cuerpoUserPlano .= "──────────────────────────\n\n";
+// Texto fijo: el acuse no incluye nada escrito por el usuario, para que el
+// formulario no sirva para enviar contenido arbitrario desde info@ a terceros.
+$cuerpoUserPlano  = "Hola,\n\n";
+$cuerpoUserPlano .= "Hemos recibido tu mensaje a través del formulario de hyperfocus.es y te responderemos en menos de 48 horas.\n\n";
+$cuerpoUserPlano .= "Si no has enviado tú este formulario, puedes ignorar este correo.\n\n";
 $cuerpoUserPlano .= "Si tienes cualquier duda, escríbenos a info@hyperfocus.es\n\n";
 $cuerpoUserPlano .= "El equipo de Hyperfocus\nhttps://hyperfocus.es\n";
 
@@ -382,41 +310,8 @@ $cuerpoUserHtml = <<<HTML
         <tr>
           <td style="padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.07);">
             <p style="margin:0 0 10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.25);">Mensaje recibido</p>
-            <h1 style="margin:0 0 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:26px;font-weight:600;letter-spacing:-0.02em;color:#ffffff;">Hola, $nombre.</h1>
+            <h1 style="margin:0 0 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:26px;font-weight:600;letter-spacing:-0.02em;color:#ffffff;">Hola.</h1>
             <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.45);">Hemos recibido tu solicitud y la revisaremos personalmente. Te respondemos en menos de 48 horas.</p>
-          </td>
-        </tr>
-
-        <!-- Resumen -->
-        <tr>
-          <td style="padding-top:28px;padding-bottom:28px;">
-            <p style="margin:0 0 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.25);">Tu solicitud</p>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;">
-              <tr>
-                <td style="padding:20px 22px;">
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                    <tr>
-                      <td style="padding-bottom:14px;">
-                        <p style="margin:0 0 2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.2);">Empresa</p>
-                        <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,0.7);">$empresa</p>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="padding-bottom:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;">
-                        <p style="margin:0 0 2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.2);">Proyecto</p>
-                        <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.65;color:rgba(255,255,255,0.7);">$ayuda</p>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;">
-                        <p style="margin:0 0 2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.2);">Inversión prevista</p>
-                        <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,0.7);">$inversion</p>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
           </td>
         </tr>
 
@@ -487,6 +382,6 @@ $cuerpoUserHtml = <<<HTML
 </html>
 HTML;
 
-smtp_send($email, $nombre, $asuntoUser, $cuerpoUserPlano, [], $cuerpoUserHtml);
+smtp_send($email, '', $asuntoUser, $cuerpoUserPlano, null, $cuerpoUserHtml);
 
 echo json_encode(['success' => true]);

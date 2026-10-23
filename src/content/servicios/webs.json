@@ -1,0 +1,106 @@
+{
+  "order": 4,
+  "seo": {
+    "title": "Webs y aplicaciones | Hyperfocus",
+    "description": "Diseño y desarrollo de webs en Toledo: webs corporativas, páginas de campaña, tiendas online y aplicaciones web rápidas y accesibles."
+  },
+  "card": {
+    "title": "Webs y aplicaciones",
+    "desc": "Webs corporativas, páginas de campaña, tiendas online y aplicaciones web rápidas y fáciles de mantener."
+  },
+  "hero": {
+    "eyebrow": "Servicios — Webs y aplicaciones",
+    "title": "Webs que explican bien lo que haces y consiguen contactos.",
+    "intro": "Webs corporativas, páginas de campaña, tiendas online y aplicaciones web rápidas, fáciles de mantener y pensadas para conseguir contactos."
+  },
+  "tech": {
+    "intro": "Tecnología actual, rápida y fácil de mantener.",
+    "items": [
+      "Astro",
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "Framer Motion",
+      "Sanity CMS",
+      "Contentful",
+      "Shopify",
+      "Stripe",
+      "Vercel",
+      "Cloudflare",
+      "WebGL",
+      "Three.js"
+    ]
+  },
+  "principles": [
+    {
+      "title": "Rendimiento ante todo",
+      "desc": "Cada milisegundo cuenta. Elegimos la herramienta según el proyecto y cuidamos el peso de cada página para que cargue rápido."
+    },
+    {
+      "title": "Diseño que convierte",
+      "desc": "La estética es un medio, no un fin: cada decisión de diseño busca que el visitante entienda lo que ofreces y dé el siguiente paso."
+    },
+    {
+      "title": "Código que escala",
+      "desc": "HTML semántico, CSS moderno y componentes reutilizables, para que la web se pueda mantener y ampliar sin rehacerla."
+    }
+  ],
+  "features": {
+    "eyebrow": "Qué hacemos",
+    "title": "Lo que podemos hacer por tu web.",
+    "intro": "Desde una página sencilla hasta una plataforma web conectada con tus otros programas.",
+    "items": [
+      {
+        "icon": "file",
+        "label": "Páginas de campaña o de producto",
+        "desc": "Una página pensada para un objetivo concreto: que te pidan presupuesto, reserven o compren."
+      },
+      {
+        "icon": "monitor",
+        "label": "Webs corporativas y de producto",
+        "desc": "Webs completas con gestor de contenidos para que podáis editarlas, blog y varios idiomas si los necesitáis."
+      },
+      {
+        "icon": "cart",
+        "label": "Tiendas online",
+        "desc": "Tiendas online con Shopify o a medida, con pagos, inventario y un proceso de compra sencillo."
+      },
+      {
+        "icon": "webapp",
+        "label": "Aplicaciones web interactivas",
+        "desc": "Áreas de cliente, configuradores de producto o paneles con datos: webs que hacen algo más que informar."
+      }
+    ]
+  },
+  "process": {
+    "title": "De la idea al lanzamiento.",
+    "intro": "Fases claras y aprobadas por ti, sin sorpresas.",
+    "steps": [
+      {
+        "title": "Estructura y bocetos",
+        "desc": "Decidimos qué páginas hacen falta, qué debe encontrar cada visitante y cómo mediremos si la web funciona."
+      },
+      {
+        "title": "Diseño visual y prototipo",
+        "desc": "Diseñamos la web completa, empezando por el móvil, para que la apruebes antes de programarla."
+      },
+      {
+        "title": "Desarrollo y optimización",
+        "desc": "La programamos cuidando la velocidad, el posicionamiento en buscadores y la accesibilidad, y la revisamos antes de publicarla."
+      }
+    ]
+  },
+  "projects": {
+    "title": "Demos que hemos construido.",
+    "items": [
+      {
+        "name": "Hyperfocus — Demo de consultora SaaS",
+        "tag": "Demo",
+        "accent": "14,165,233",
+        "video": "/videos/proyectos-webs/Demo-Consultora-saas",
+        "poster": "/images/posters/demo-consultora.webp"
+      }
+    ]
+  }
+}

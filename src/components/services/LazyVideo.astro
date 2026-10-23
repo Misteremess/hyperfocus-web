@@ -1,0 +1,39 @@
+---
+// Vídeo decorativo que no se descarga hasta que está cerca de la pantalla.
+// `src` sin extensión: se sirven .webm y .mp4.
+interface Props {
+  src: string;
+  poster?: string;
+  class?: string;
+}
+const { src, poster, class: className } = Astro.props;
+---
+
+<video data-lazy-video muted loop playsinline preload="none" poster={poster} aria-hidden="true" class={className}>
+  <source data-src={`${src}.webm`} type="video/webm" />
+  <source data-src={`${src}.mp4`} type="video/mp4" />
+</video>
+
+<script>
+  function initLazyVideos() {
+    const videos = document.querySelectorAll<HTMLVideoElement>("video[data-lazy-video]:not([data-ready])");
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const v = entry.target as HTMLVideoElement;
+          v.querySelectorAll<HTMLSourceElement>("source[data-src]").forEach((s) => (s.src = s.dataset.src!));
+          v.load();
+          v.play().catch(() => {});
+          io.unobserve(v);
+        });
+      },
+      { rootMargin: "200px 0px" },
+    );
+    videos.forEach((v) => {
+      v.dataset.ready = "1";
+      io.observe(v);
+    });
+  }
+  document.addEventListener("astro:page-load", initLazyVideos);
+</script>

@@ -1,6 +1,6 @@
 ---
 import HomeLayout from "../../layouts/HomeLayout.astro";
-import EnConstruccion from "../../components/layout/EnConstruccion";
+import EnConstruccion from "../../components/layout/EnConstruccion.astro";
 
 export function getStaticPaths() {
   return [
@@ -13,9 +13,8 @@ export function getStaticPaths() {
 }
 ---
 
-<HomeLayout title="Soluciones | Hyperfocus">
+<HomeLayout title="Soluciones | Hyperfocus" noindex>
   <EnConstruccion
-    client:load
     tag="Soluciones"
     title="Estamos preparando esta página."
     subtitle="Estamos definiendo cómo presentar nuestras soluciones por tipo de empresa. Si quieres adelantarte, cuéntanos tu caso directamente."

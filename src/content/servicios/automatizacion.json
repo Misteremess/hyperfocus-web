@@ -1,0 +1,128 @@
+{
+  "order": 3,
+  "seo": {
+    "title": "Automatización de procesos | Hyperfocus",
+    "description": "Automatización de procesos para pymes desde Toledo: conectamos tus herramientas para que las tareas repetitivas se hagan solas."
+  },
+  "card": {
+    "title": "Automatización",
+    "desc": "Conectamos las herramientas que ya usáis para que las tareas repetitivas se hagan solas."
+  },
+  "hero": {
+    "eyebrow": "Servicios — Automatización",
+    "title": "Menos tareas repetitivas, más tiempo para lo importante.",
+    "intro": "Conectamos las herramientas que ya usáis para que los datos y las tareas repetitivas se muevan solos, y te avisamos si algo falla."
+  },
+  "tech": {
+    "intro": "Trabajamos con el ecosistema de herramientas que ya usa tu empresa.",
+    "items": [
+      "Make",
+      "n8n",
+      "Zapier",
+      "Airtable",
+      "HubSpot",
+      "Salesforce",
+      "Notion",
+      "Slack",
+      "Stripe",
+      "Google Workspace",
+      "Pipedrive",
+      "Monday.com",
+      "Twilio",
+      "SendGrid",
+      "REST APIs",
+      "Webhooks"
+    ]
+  },
+  "stats": [
+    {
+      "value": "24/7",
+      "label": "Tus procesos siguen corriendo aunque tú no estés delante."
+    },
+    {
+      "value": "0",
+      "label": "Cambios de herramienta: trabajamos con las que ya usáis."
+    },
+    {
+      "value": "1:1",
+      "label": "Hablas directamente con quien diseña la automatización."
+    }
+  ],
+  "features": {
+    "eyebrow": "Qué automatizamos",
+    "title": "Cuatro áreas donde se suele ganar más tiempo.",
+    "intro": "Desde un aviso automático hasta una cadena de varios programas: empezamos por lo que más tiempo te quita.",
+    "items": [
+      {
+        "icon": "sun",
+        "label": "Procesos internos",
+        "desc": "Aprobaciones, avisos, reparto de tareas e informes que se generan solos, para que tu equipo deje de hacerlos a mano."
+      },
+      {
+        "icon": "link",
+        "label": "Integraciones entre sistemas",
+        "desc": "Conectamos tu programa de clientes, tu ERP, la tienda online o el correo para que los datos pasen de uno a otro sin copiarlos."
+      },
+      {
+        "icon": "bars",
+        "label": "Informes y avisos",
+        "desc": "Paneles con las cifras al día, informes que llegan solos cada semana y avisos cuando algo se sale de lo normal."
+      },
+      {
+        "icon": "bolt",
+        "label": "Flujos con IA",
+        "desc": "Usamos IA donde aporta: leer y clasificar correos o documentos, extraer datos de facturas o redactar borradores."
+      }
+    ]
+  },
+  "process": {
+    "title": "Cómo lo hacemos.",
+    "intro": "Proceso claro y por escrito, sin sorpresas.",
+    "steps": [
+      {
+        "title": "Revisión de procesos",
+        "desc": "Vemos cómo trabajáis hoy, cuánto tiempo se va en cada tarea y qué compensa automatizar primero."
+      },
+      {
+        "title": "Diseño del flujo",
+        "desc": "Decidimos qué herramientas se conectan, qué pasa si algo falla y cómo te enteras, antes de montar nada."
+      },
+      {
+        "title": "Puesta en marcha y seguimiento",
+        "desc": "Lo probamos primero con datos reales en un entorno de pruebas y, cuando funciona, lo activamos con avisos por si algo falla."
+      }
+    ]
+  },
+  "concepts": [
+    {
+      "name": "Sincronización automática de datos entre plataformas",
+      "sector": "SaaS",
+      "image": "/images/conceptos/saas-sincronizacion-automatica-de-datos-entre-plataformas.webp"
+    },
+    {
+      "name": "Gestión de pedidos sin intervención manual",
+      "sector": "E-commerce",
+      "image": "/images/conceptos/e-commerce-gestion-de-pedidos-sin-intervencion-manual.webp"
+    },
+    {
+      "name": "Informe semanal automático",
+      "sector": "Retail",
+      "image": "/images/conceptos/retail-reporting-semanal-automatizado.webp"
+    },
+    {
+      "name": "Avisos de estado en tiempo real",
+      "sector": "Logística",
+      "image": "/images/conceptos/logistica-notificaciones-de-estado-en-tiempo-real.webp"
+    },
+    {
+      "name": "Generación y envío automático de contratos",
+      "sector": "Legal",
+      "image": "/images/conceptos/legal-generacion-y-envio-automatico-de-contratos.webp"
+    },
+    {
+      "name": "CRM automatizado y seguimiento de clientes potenciales",
+      "sector": "Consultoría",
+      "image": "/images/conceptos/consultoria-crm-automatizado-y-seguimiento-de-leads.webp"
+    }
+  ]
+}

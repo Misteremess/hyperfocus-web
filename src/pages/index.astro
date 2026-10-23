@@ -1,9 +1,13 @@
 ---
 import HomeLayout from "../layouts/HomeLayout.astro";
 import HomePage from "../components/home/HomePage";
+import Footer from "../components/layout/Footer.astro";
 ---
 
-<HomeLayout title="Hyperfocus | Software, IA y automatización para empresas"
-  description="Estudio de software, agentes de IA y automatización. Construimos sistemas digitales a medida para empresas que quieren avanzar.">
+<HomeLayout
+  title="Hyperfocus · Software a medida, IA y automatización en Toledo"
+  description="Estudio de Toledo que hace software a medida, agentes de IA y automatizaciones para pymes de toda España. Trato directo con quien programa tu proyecto."
+>
   <HomePage client:load />
+  <Footer />
 </HomeLayout>
